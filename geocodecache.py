@@ -100,7 +100,7 @@ def geocode(db, town, location):
 
         return fetchresult
 
-def produceMapHeader(apikey, markers):
+def produceMapHeader(apikey, markers, centers):
     """Produces a map header given an API key and a list of produceMarkers"""
 
     out = """
@@ -110,50 +110,78 @@ def produceMapHeader(apikey, markers):
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <title>Current Power Outage Map for Rochester, New York</title>
-<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=%s"
-        type="text/javascript"></script>
+<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=%s" type="text/javascript"></script>
+<script src="http://gmaps-utility-library.googlecode.com/svn/trunk/markermanager/release/src/markermanager.js"></script>
 <script type="text/javascript">
+
+    var map = null;
+    var mgr = null;
+
     function initialize() {
         if (GBrowserIsCompatible()) {
-            var map = new GMap2(document.getElementById("map_canvas"));
+            map = new GMap2(document.getElementById("map_canvas"));
             map.setCenter(new GLatLng(43.15661, -77.6253), 11);
             map.setUIToDefault();
+            mgr = new MarkerManager(map);
+            window.setTimeout(setupMarkers, 0);
+        }
+    }
 
-            // Create a base icon for all of our markers that specifies the
-            // shadow, icon dimensions, etc.
-            var baseIcon = new GIcon(G_DEFAULT_ICON);
-            baseIcon.shadow = "http://www.google.com/mapfiles/shadow50.png";
-            baseIcon.iconSize = new GSize(20, 34);
-            baseIcon.shadowSize = new GSize(37, 34);
-            baseIcon.iconAnchor = new GPoint(9, 34);
-            baseIcon.infoWindowAnchor = new GPoint(9, 2);
+    function createMarker(point, text) {
+        var baseIcon = new GIcon(G_DEFAULT_ICON);
+        baseIcon.shadow = "http://www.google.com/mapfiles/shadow50.png";
+        baseIcon.iconSize = new GSize(20, 34);
+        baseIcon.shadowSize = new GSize(37, 34);
+        baseIcon.iconAnchor = new GPoint(9, 34);
+        baseIcon.infoWindowAnchor = new GPoint(9, 2);
 
-            // Creates a marker whose info window displays text
-            function createMarker(point, text) {
-                var ouricon = new GIcon(baseIcon);
-                ouricon.image = "http://www.google.com/mapfiles/marker.png";
+        var ouricon = new GIcon(baseIcon);
+        ouricon.image = "http://www.google.com/mapfiles/marker.png";
 
-                // Set up our GMarkerOptions object
-                markerOptions = { icon:ouricon };
-                var marker = new GMarker(point, markerOptions);
+        // Set up our GMarkerOptions object
+        markerOptions = { icon:ouricon };
+        var marker = new GMarker(point, markerOptions);
 
-                GEvent.addListener(marker, "click", function() {
-                    marker.openInfoWindowHtml(text);
-                });
-                return marker;
-            }
+        GEvent.addListener(marker, "click", function() {
+            marker.openInfoWindowHtml(text);
+        });
+        return marker;
+    }
+
 """ % apikey
 
-    out += '\n'.join(markers)
+    if len(markers) > 300:
+        out += """
+            function setupMarkers() {
+                var batch = [];
+                %s
+                mgr.addMarkers(batch, 12);
+                var batch = [];
+                %s
+                mgr.addMarkers(batch, 1, 12);
+                mgr.refresh();
+            }
+        """ % ('\n'.join(markers), '\n'.join(centers))
+    else:
+        out += """
+            function setupMarkers() {
+                var batch = [];
+                %s
+                mgr.addMarkers(batch, 1);
+                mgr.refresh();
+            }
+        """ % '\n'.join(markers)
 
-    out += """} }    </script>
-  </head>
-"""
+    out += """
+        </script>
+        </head>
+    """
+
     return out
 
 def produceMarker(lat, long, text):
     """Produces a google maps marker given a latitude, longitude, and text"""
-    return 'map.addOverlay(new createMarker(new GLatLng(%f, %f), "%s"));' % (lat, long, text)
+    return 'batch.push(new createMarker(new GLatLng(%f, %f), "%s"));' % (lat, long, text)
 
 def produceMapBody(body):
     return """  <body onload="initialize()" onunload="GUnload()">
@@ -169,6 +197,7 @@ if __name__ == '__main__':
 
     localelist = []
     markerlist = []
+    citycenterlist = [] 
 
     stoplist = ['HONEOYE%20FL', 'HONEOYE', 'N%20CHILI']
 
@@ -181,6 +210,9 @@ if __name__ == '__main__':
         cleanname = i.replace('%20', ' ')
 
         count = 0
+
+        citycenter = geocode(db, cleanname, '')
+        citycenterlist.append(produceMarker(citycenter['latitude'], citycenter['longitude'], citycenter['formattedaddress']))
 
         for j in fd.readlines():
             streetinfo = geocode(db, cleanname, j)
@@ -195,7 +227,7 @@ if __name__ == '__main__':
         localelist.append('<a href="http://ebiz1.rge.com/cusweb/outage/roadOutages.aspx?town=%s">%s</a>: %i street%s' % (i, cleanname, count, s))
 
     if len(markerlist) > 0:
-        sys.stdout.write(produceMapHeader(apikey, markerlist))
+        sys.stdout.write(produceMapHeader(apikey, markerlist, citycenterlist))
         sys.stdout.write(produceMapBody('<p>Rochester-area Power Outages, Last updated: %s, %i objects.  Data courtesy <A HREF="http://ebiz1.rge.com/cusweb/outage/index.aspx">RG&E</A>, all blame to <a href="http://hoopycat.com/~rtucker/">Ryan Tucker</a> &lt;<a href="mailto:rtucker@gmail.com">rtucker@gmail.com</a>&gt;.</p><p style="font-size:xx-small;">%s</p>' % (lastupdated, len(markerlist), '; '.join(localelist))))
 
 
