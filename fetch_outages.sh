@@ -9,6 +9,8 @@ wget -q -O $TEMPFILE http://ebiz1.rge.com/cusweb/outage/index.aspx
 
 LOCATIONS=`grep "<option value=\"14|" $TEMPFILE | cut -d'|' -f2 | cut -d'"' -f1 | sed "s/ /%20/g" | xargs`
 
+rm $TEMPFILE
+
 for i in $LOCATIONS
 do
     TEMPFILE=`tempfile`
