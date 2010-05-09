@@ -110,9 +110,28 @@ def produceMapHeader(apikey, markers, centers):
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <title>Current Power Outage Map for Rochester, New York</title>
+<style type="text/css">
+    v\:* {behavior:url(#default#VML);}  html, body {width: 100%%; height: 100%%}  body {margin-top: 0px; margin-right: 0px; margin-left: 0px; margin-bottom: 0px}
+
+    p {
+        font-family:  Verdana, sans-serif;
+        font-size: 13px;
+      }
+
+    .hidden { visibility: hidden; }
+    .unhidden { visibility: visible; }
+
+</style>
 <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=%s" type="text/javascript"></script>
 <script src="http://gmaps-utility-library.googlecode.com/svn/trunk/markermanager/release/src/markermanager.js"></script>
 <script type="text/javascript">
+
+    function hide(divID) {
+        var item = document.getElementById(divID);
+        if (item) {
+            item.className=(item.className=='unhidden')?'hidden':'unhidden';
+        }
+    }
 
     var map = null;
     var mgr = null;
@@ -124,6 +143,13 @@ def produceMapHeader(apikey, markers, centers):
             map.setUIToDefault();
             mgr = new MarkerManager(map);
             window.setTimeout(setupMarkers, 0);
+
+            // Monitor the window resize event and let the map know when it occurs
+            if (window.attachEvent) { 
+                window.attachEvent("onresize", function() {this.map.onResize()} );
+            } else {
+                window.addEventListener("resize", function() {this.map.onResize()} , false);
+            }
         }
     }
 
@@ -185,8 +211,13 @@ def produceMarker(lat, long, text):
 
 def produceMapBody(body):
     return """  <body onload="initialize()" onunload="GUnload()">
-    %s
-    <div id="map_canvas" style="height: 500px;"></div>
+    <div id="map_canvas" style="width: 100%%; height: 100%%;"></div>
+    <div id="infobox" class="unhidden" style="top:25px; left:75px; position:absolute; background-color:white; border:2px solid black; width:50%%; opacity:0.8">
+        <div id="closebutton" style="top:2px; right:2px; position:absolute">
+            <a href="javascript:hide('infobox');"><img src="xbox.png" border=0 alt="X" title="We'll leave the light on for you."></a>
+        </div>
+        %s
+    </div>
   </body>
 </html>
 """ % body
@@ -224,7 +255,7 @@ if __name__ == '__main__':
         else:
             s = ''
 
-        localelist.append('<a href="http://ebiz1.rge.com/cusweb/outage/roadOutages.aspx?town=%s">%s</a>: %i street%s' % (i, cleanname, count, s))
+        localelist.append('<a href="http://ebiz1.rge.com/cusweb/outage/roadOutages.aspx?town=%s">%s</a>:&nbsp;%i&nbsp;street%s' % (i, cleanname, count, s))
 
     if len(markerlist) > 0:
         if len(markerlist) > 300:
@@ -234,5 +265,5 @@ if __name__ == '__main__':
         else:
             s = ''
         sys.stdout.write(produceMapHeader(apikey, markerlist, citycenterlist))
-        sys.stdout.write(produceMapBody('<p>Map of Rochester-area Power Outages, as of %s (%i street%s).  Data from <A HREF="http://ebiz1.rge.com/cusweb/outage/index.aspx">RG&E</A>, all blame to <a href="http://hoopycat.com/~rtucker/">Ryan Tucker</a> &lt;<a href="mailto:rtucker@gmail.com">rtucker@gmail.com</a>&gt;.</p><p style="font-size:xx-small;">%s</p>' % (lastupdated, len(markerlist), s, '; '.join(localelist))))
+        sys.stdout.write(produceMapBody('<p><b>Map of Rochester-area Power Outages</b> as of %s (%i street%s).  Data from <A HREF="http://ebiz1.rge.com/cusweb/outage/index.aspx">RG&E</A>, all map-related blame to <a href="http://hoopycat.com/~rtucker/">Ryan Tucker</a> &lt;<a href="mailto:rtucker@gmail.com">rtucker@gmail.com</a>&gt;.</p><p style="font-size:xx-small;">%s</p>' % (lastupdated, len(markerlist), s, '; '.join(localelist))))
 
