@@ -29,6 +29,7 @@ $GENERATOR $LOCATIONS > $TEMPFILE
 
 if [ -n "`cat $TEMPFILE`" ]; then
     cp $TEMPFILE $HTMLFILE
+    rm $TEMPFILE
 else
     echo "$TEMPFILE was empty, utoh"
 fi
