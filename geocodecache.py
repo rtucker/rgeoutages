@@ -167,18 +167,25 @@ def produceMapBody(body):
 
 if __name__ == '__main__':
     db = initDB()
-    fd = open('/var/www/hoopycat.com/html/rgeoutages/outages_rochester.txt')
-
     apikey = "ABQIAAAA30Jhq_DCCBUDYXZhoCyheRSUYQ6bykvEQfbcB8o1clNVPLJCmBS95D0ZW-pGwa1P39Qz-hMw8rGwxA"
 
-    lastupdated = fd.readline()
+    localelist = []
     markerlist = []
 
-    for i in fd.readlines():
-        streetinfo = geocode(db, "ROCHESTER", i)
-        markerlist.append(produceMarker(streetinfo['latitude'], streetinfo['longitude'], streetinfo['formattedaddress']))
+    for i in sys.argv[1:]:
+        fd = open('/var/www/hoopycat.com/html/rgeoutages/outages_%s.txt' % i)
+        lastupdated = fd.readline()
+
+        count = 0
+
+        for j in fd.readlines():
+            streetinfo = geocode(db, i, j)
+            markerlist.append(produceMarker(streetinfo['latitude'], streetinfo['longitude'], streetinfo['formattedaddress']))
+            count += 1
+
+        localelist.append("%s: %i streets" % (i, count))
 
     sys.stdout.write(produceMapHeader(apikey, markerlist))
-    sys.stdout.write(produceMapBody('<p>Rochester Power Outages, Last updated: %s, %i objects.  Data courtesy <A HREF="http://ebiz1.rge.com/cusweb/outage/roadOutages.aspx?town=ROCHESTER">RG&E</A>, all blame to <a href="http://hoopycat.com/~rtucker/">Ryan Tucker</a> &lt;<a href="mailto:rtucker@gmail.com">rtucker@gmail.com</a>&gt;.</p>' % (lastupdated, len(markerlist))))
+    sys.stdout.write(produceMapBody('<p>Rochester-area Power Outages, Last updated: %s, %i objects.  Data courtesy <A HREF="http://ebiz1.rge.com/cusweb/outage/roadOutages.aspx?town=ROCHESTER">RG&E</A>, all blame to <a href="http://hoopycat.com/~rtucker/">Ryan Tucker</a> &lt;<a href="mailto:rtucker@gmail.com">rtucker@gmail.com</a>&gt;.</p><p style="font-size:xx-small;">%s</p>' % (lastupdated, len(markerlist), '; '.join(localelist))))
 
 
