@@ -172,20 +172,27 @@ if __name__ == '__main__':
     localelist = []
     markerlist = []
 
+    stoplist = ['HONEOYE%20FL', 'HONEOYE', 'N%20CHILI']
+
     for i in sys.argv[1:]:
+        if i in stoplist:
+            continue
+
         fd = open('/var/www/hoopycat.com/html/rgeoutages/outages_%s.txt' % i)
         lastupdated = fd.readline()
+        cleanname = i.replace('%20', ' ')
 
         count = 0
 
         for j in fd.readlines():
-            streetinfo = geocode(db, i, j)
+            streetinfo = geocode(db, cleanname, j)
             markerlist.append(produceMarker(streetinfo['latitude'], streetinfo['longitude'], streetinfo['formattedaddress']))
             count += 1
 
-        localelist.append("%s: %i streets" % (i, count))
+        localelist.append('<a href="http://ebiz1.rge.com/cusweb/outage/roadOutages.aspx?town=%s">%s</a>: %i streets' % (i, cleanname, count))
 
-    sys.stdout.write(produceMapHeader(apikey, markerlist))
-    sys.stdout.write(produceMapBody('<p>Rochester-area Power Outages, Last updated: %s, %i objects.  Data courtesy <A HREF="http://ebiz1.rge.com/cusweb/outage/roadOutages.aspx?town=ROCHESTER">RG&E</A>, all blame to <a href="http://hoopycat.com/~rtucker/">Ryan Tucker</a> &lt;<a href="mailto:rtucker@gmail.com">rtucker@gmail.com</a>&gt;.</p><p style="font-size:xx-small;">%s</p>' % (lastupdated, len(markerlist), '; '.join(localelist))))
+    if len(markerlist) > 0:
+        sys.stdout.write(produceMapHeader(apikey, markerlist))
+        sys.stdout.write(produceMapBody('<p>Rochester-area Power Outages, Last updated: %s, %i objects.  Data courtesy <A HREF="http://ebiz1.rge.com/cusweb/outage/index.aspx">RG&E</A>, all blame to <a href="http://hoopycat.com/~rtucker/">Ryan Tucker</a> &lt;<a href="mailto:rtucker@gmail.com">rtucker@gmail.com</a>&gt;.</p><p style="font-size:xx-small;">%s</p>' % (lastupdated, len(markerlist), '; '.join(localelist))))
 
 

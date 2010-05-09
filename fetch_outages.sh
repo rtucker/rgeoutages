@@ -8,11 +8,9 @@ TEMPFILE=`tempfile`
 wget -q -O $TEMPFILE http://ebiz1.rge.com/cusweb/outage/index.aspx
 
 LOCATIONS=`grep "<option value=\"14|" $TEMPFILE | cut -d'|' -f2 | cut -d'"' -f1 | sed "s/ /%20/g" | xargs`
-echo $LOCATIONS
 
 for i in $LOCATIONS
 do
-    echo Fetching $i
     TEMPFILE=`tempfile`
     OUTFILE=/var/www/hoopycat.com/html/rgeoutages/outages_$i.txt
     wget -q -O $TEMPFILE "http://ebiz1.rge.com/cusweb/outage/roadoutages.aspx?town=$i"
