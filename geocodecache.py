@@ -175,11 +175,10 @@ if __name__ == '__main__':
     markerlist = []
 
     for i in fd.readlines():
-        sys.stderr.write(i)
         streetinfo = geocode(db, "ROCHESTER", i)
         markerlist.append(produceMarker(streetinfo['latitude'], streetinfo['longitude'], streetinfo['formattedaddress']))
 
     sys.stdout.write(produceMapHeader(apikey, markerlist))
-    sys.stdout.write(produceMapBody('<p>Rochester Power Outages, Last updated: %s.  Courtesy <A HREF="http://ebiz1.rge.com/cusweb/outage/roadOutages.aspx?town=ROCHESTER">RG&E</A>.</p>' % lastupdated))
+    sys.stdout.write(produceMapBody('<p>Rochester Power Outages, Last updated: %s, %i objects.  Data courtesy <A HREF="http://ebiz1.rge.com/cusweb/outage/roadOutages.aspx?town=ROCHESTER">RG&E</A>, all blame to <a href="http://hoopycat.com/~rtucker/">Ryan Tucker</a> &lt;<a href="mailto:rtucker@gmail.com">rtucker@gmail.com</a>&gt;.</p>' % (lastupdated, len(markerlist))))
 
 
