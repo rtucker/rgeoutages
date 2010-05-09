@@ -19,6 +19,7 @@ do
     grep "<td nowrap=\"nowrap\">" $TEMPFILE \
      | cut -d">" -f2 | cut -d"<" -f1 >> $OUTFILE
     rm $TEMPFILE
+    sleep 10
 done
 
 # All together now

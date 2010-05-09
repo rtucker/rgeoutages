@@ -157,9 +157,7 @@ def produceMarker(lat, long, text):
 
 def produceMapBody(body):
     return """  <body onload="initialize()" onunload="GUnload()">
-    <div id="toppart" style="height: 50px;">
-        %s
-    </div>
+    %s
     <div id="map_canvas" style="height: 500px;"></div>
   </body>
 </html>
@@ -189,7 +187,12 @@ if __name__ == '__main__':
             markerlist.append(produceMarker(streetinfo['latitude'], streetinfo['longitude'], streetinfo['formattedaddress']))
             count += 1
 
-        localelist.append('<a href="http://ebiz1.rge.com/cusweb/outage/roadOutages.aspx?town=%s">%s</a>: %i streets' % (i, cleanname, count))
+        if count > 1:
+            s = 's'
+        else:
+            s = ''
+
+        localelist.append('<a href="http://ebiz1.rge.com/cusweb/outage/roadOutages.aspx?town=%s">%s</a>: %i street%s' % (i, cleanname, count, s))
 
     if len(markerlist) > 0:
         sys.stdout.write(produceMapHeader(apikey, markerlist))
