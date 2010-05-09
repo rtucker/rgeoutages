@@ -227,7 +227,12 @@ if __name__ == '__main__':
         localelist.append('<a href="http://ebiz1.rge.com/cusweb/outage/roadOutages.aspx?town=%s">%s</a>: %i street%s' % (i, cleanname, count, s))
 
     if len(markerlist) > 0:
+        if len(markerlist) > 300:
+            s = 's -- zoom for more detail'
+        elif len(markerlist) > 1:
+            s = 's'
+        else:
+            s = ''
         sys.stdout.write(produceMapHeader(apikey, markerlist, citycenterlist))
-        sys.stdout.write(produceMapBody('<p>Rochester-area Power Outages, Last updated: %s, %i objects.  Data courtesy <A HREF="http://ebiz1.rge.com/cusweb/outage/index.aspx">RG&E</A>, all blame to <a href="http://hoopycat.com/~rtucker/">Ryan Tucker</a> &lt;<a href="mailto:rtucker@gmail.com">rtucker@gmail.com</a>&gt;.</p><p style="font-size:xx-small;">%s</p>' % (lastupdated, len(markerlist), '; '.join(localelist))))
-
+        sys.stdout.write(produceMapBody('<p>Map of Rochester-area Power Outages, as of %s (%i street%s).  Data from <A HREF="http://ebiz1.rge.com/cusweb/outage/index.aspx">RG&E</A>, all blame to <a href="http://hoopycat.com/~rtucker/">Ryan Tucker</a> &lt;<a href="mailto:rtucker@gmail.com">rtucker@gmail.com</a>&gt;.</p><p style="font-size:xx-small;">%s</p>' % (lastupdated, len(markerlist), s, '; '.join(localelist))))
 
