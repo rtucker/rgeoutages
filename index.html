@@ -1,0 +1,330 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title>Current Power Outage Map for Rochester, New York</title>
+<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAA30Jhq_DCCBUDYXZhoCyheRSUYQ6bykvEQfbcB8o1clNVPLJCmBS95D0ZW-pGwa1P39Qz-hMw8rGwxA"
+        type="text/javascript"></script>
+<script type="text/javascript">
+    function initialize() {
+        if (GBrowserIsCompatible()) {
+            var map = new GMap2(document.getElementById("map_canvas"));
+            map.setCenter(new GLatLng(43.15661, -77.6253), 11);
+            map.setUIToDefault();
+
+            // Create a base icon for all of our markers that specifies the
+            // shadow, icon dimensions, etc.
+            var baseIcon = new GIcon(G_DEFAULT_ICON);
+            baseIcon.shadow = "http://www.google.com/mapfiles/shadow50.png";
+            baseIcon.iconSize = new GSize(20, 34);
+            baseIcon.shadowSize = new GSize(37, 34);
+            baseIcon.iconAnchor = new GPoint(9, 34);
+            baseIcon.infoWindowAnchor = new GPoint(9, 2);
+
+            // Creates a marker whose info window displays text
+            function createMarker(point, text) {
+                var ouricon = new GIcon(baseIcon);
+                ouricon.image = "http://www.google.com/mapfiles/marker.png";
+
+                // Set up our GMarkerOptions object
+                markerOptions = { icon:ouricon };
+                var marker = new GMarker(point, markerOptions);
+
+                GEvent.addListener(marker, "click", function() {
+                    marker.openInfoWindowHtml(text);
+                });
+                return marker;
+            }
+map.addOverlay(new createMarker(new GLatLng(43.204040, -77.665826), "Acton St, Rochester, NY 14615, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.109612, -77.748673), "Alder Bush, Rochester, NY 14624, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.111406, -77.515475), "Alpine Dr, Rochester, NY 14618, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.136952, -77.647969), "Anthony St, Rochester, NY 14619, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.255525, -77.656767), "Arcadia Pkwy, Rochester, NY 14612, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.100352, -77.732447), "Archer Rd, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.112618, -77.757127), "Ascot Dr, Rochester, NY 14624, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.180600, -77.607977), "Ave D, Rochester, NY 14621, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.141417, -77.580057), "Avondale Park, Rochester, NY 14620, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.202872, -77.665368), "Ayer St, Rochester, NY 14615, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.234337, -77.650873), "Bancroft Dr, Rochester, NY 14616, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.220889, -77.683429), "Barbie Dr, Greece, NY 14626, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.201063, -77.609363), "Barry Rd, Rochester, NY 14617, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.142793, -77.626063), "Bartlett St, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.132621, -77.635763), "Barton St, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.190368, -77.540673), "Bay View Rd, Rochester, NY 14609, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.123592, -77.774645), "Baylor Cir, Rochester, NY 14624, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.132983, -77.738306), "Bending Creek Rd, Rochester, NY 14624, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.138378, -77.594963), "Benton St, Rochester, NY 14620, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.161182, -77.560631), "Berry St, Rochester, NY 14609, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.159131, -77.542957), "Berwick Rd, Rochester, NY 14609, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.225960, -77.553576), "Birchwood Dr, Rochester, NY 14622, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.148799, -77.530599), "Blossom Cir E, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.149205, -77.535228), "Blossom Rd, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.143257, -77.592065), "Boardman St, Rochester, NY 14607, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.171226, -77.571671), "Bock St, Rochester, NY 14609, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.109362, -77.552916), "Branch Ave, Rochester, NY 14618, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.215162, -77.555618), "Brandon Rd, Rochester, NY 14622, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.235113, -77.652986), "Brayton Rd, Rochester, NY 14616, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.130836, -77.661568), "Brooks Ave, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.155212, -77.522127), "Browncroft Blvd, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.199127, -77.706544), "Buck Hill Rd, Greece, NY 14626, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.144360, -77.726065), "Buffalo Rd, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.203876, -77.609430), "Burwell Rd, Rochester, NY 14617, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.213317, -77.682114), "Cabot Rd, Greece, NY 14626, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.145828, -77.626077), "Cady St, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.068484, -77.621802), "Calkins Rd, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.255007, -77.636634), "Camille Dr, Rochester, NY 14612, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.141885, -77.540367), "Cardiff Park, Rochester, NY 14610, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.139040, -77.599876), "Caroline St, Rochester, NY 14620, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.138794, -77.558932), "Castlebar Rd, Rochester, NY 14610, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.119330, -77.716699), "Chili Ave, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.171395, -77.737769), "Citrus Dr, Rochester, NY 14606, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.248887, -77.651130), "Clardale Dr, Rochester, NY 14616, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.191682, -77.638885), "Clay Ave, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.175450, -77.591230), "Clifford Ave, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.137303, -77.593813), "Clinton Ave N, Rochester, NY 14620, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.124648, -77.593338), "Clinton Ave S, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.106800, -77.551615), "Clover Hills Dr, Rochester, NY 14618, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.129189, -77.545548), "Clover St, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.131954, -77.583587), "Cobb Terrace, Rochester, NY 14620, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.174585, -77.708259), "Cole Ave, Rochester, NY 14606, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.239982, -77.590644), "Colebrook Dr, Rochester, NY 14617, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.191716, -77.539908), "Conmar Dr, Rochester, NY 14609, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.125349, -77.615553), "Cook St, Rochester, NY 14620, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.202817, -77.666789), "Corona Rd, Rochester, NY 14615, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.206649, -77.589429), "Coronado Dr, Rochester, NY 14617, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.135346, -77.629115), "Cottage St, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.224715, -77.594051), "Couchman Ave, Rochester, NY 14617, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.233249, -77.668700), "Courtly Cir, Rochester, NY 14615, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.096448, -77.794295), "Creekview Dr, Rochester, NY 14624, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.215114, -77.700329), "Creekwood Dr, Greece, NY 14626, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.109522, -77.730818), "Cross Bow Dr, Rochester, NY 14624, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.184871, -77.560812), "Culver Rd, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.004341, -77.210158), "Curran Rd, Shortsville, NY 14548, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.109061, -77.567563), "Danforth Crescent, Rochester, NY 14618, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.109499, -77.563737), "Dartford Rd, Rochester, NY 14618, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.154784, -77.615557), "Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.219934, -77.641280), "Dewey Ave, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.254935, -77.631023), "Dohrcrest Dr, Rochester, NY 14612, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.236671, -77.601329), "Dorvid Rd, Rochester, NY 14617, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.141782, -77.539950), "Dover Park, Rochester, NY 14610, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.070858, -77.596023), "Down St, Rochester, NY 14623, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.102724, -77.561188), "Dunrovin Ln, Rochester, NY 14618, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.161115, -77.559796), "Durham St, Rochester, NY 14609, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.136910, -77.628933), "Earl St, Rochester, NY 14611, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.140760, -77.544662), "East Ave, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.304297, -77.707905), "E Manitou Rd, Rochester, NY 14612, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.102943, -77.564675), "Edgewood Ave, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.240300, -77.666467), "Eileen Dr, Rochester, NY 14616, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.130452, -77.591682), "Eldridge Ave, Rochester, NY 14620, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.159948, -77.543019), "Elm Dr, Rochester, NY 14609, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.160776, -77.543070), "Elmcroft Rd, Rochester, NY 14609, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.125882, -77.583560), "Elmwood Ave, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.171666, -77.533069), "Empire Blvd, Rochester, NY 14609, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.238406, -77.686943), "English Rd, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.182729, -77.595525), "Ernst St, Rochester, NY 14621, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.111259, -77.567278), "Evandale Rd, Rochester, NY 14618, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.126093, -77.512153), "Ewald Dr, Rochester, NY 14625, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.213828, -77.700983), "Fair Ln Dr, Greece, NY 14626, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.130429, -77.570919), "Fair Oaks Ave, Rochester, NY 14618, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.255530, -77.655269), "Fallingwood Terrace, Rochester, NY 14612, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.071605, -77.597145), "Farnsworth Rd N, Rochester, NY 14623, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.254252, -77.648099), "Fawn Hill Rd, Rochester, NY 14612, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.138040, -77.589082), "Field St, Rochester, NY 14620, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.135966, -77.647961), "Flanders St, Rochester, NY 14619, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.137264, -77.592461), "Fountain St, Rochester, NY 14620, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.143785, -77.632832), "Frost Ave, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.129579, -77.613405), "Furman Crescent, Rochester, NY 14620, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.199482, -77.586590), "Galaxy Dr, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.163760, -77.571114), "Garson Ave, Rochester, NY 14609, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.104805, -77.769436), "Gary Hill Dr, Rochester, NY 14624, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.132164, -77.654555), "Genesee Park Blvd, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.136665, -77.636016), "Genesee St, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.185712, -77.612488), "Geneva St, Rochester, NY 14621, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.112889, -77.564633), "Glenhill Dr, Rochester, NY 14618, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.163854, -77.654144), "Glide St, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.126113, -77.615139), "Gold St, Rochester, NY 14620, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.140575, -77.549817), "Gould St, Rochester, NY 14610, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.110648, -77.564401), "Greenvale Dr, Rochester, NY 14618, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.137189, -77.548245), "Grosvenor Rd, Rochester, NY 14610, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.098924, -77.790169), "Guaymar Cir, Rochester, NY 14624, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.226238, -77.594134), "Hathaway Rd, Rochester, NY 14617, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.140870, -77.628958), "Hawley St, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.242266, -77.585276), "Hearthstone Ln, Rochester, NY 14617, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.129441, -77.582714), "Hemingway Dr, Rochester, NY 14620, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.104313, -77.559785), "Hibiscus Dr, Rochester, NY 14618, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.135017, -77.579257), "Highland Ave, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.097205, -77.783592), "Hillary Dr, Rochester, NY 14624, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.154784, -77.615557), "Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.154784, -77.615557), "Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.232469, -77.601416), "Hollywood Crescent, Rochester, NY 14617, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.192172, -77.654818), "Hollywood St, Rochester, NY 14615, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.125382, -77.511385), "Honeysuckle Dr, Rochester, NY 14625, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.202970, -77.671884), "Hoover Dr, Rochester, NY 14615, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.097209, -77.785077), "Hopeton Dr, Rochester, NY 14624, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.186814, -77.599577), "Hudson Ave, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.153742, -77.560595), "Humboldt St, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.140360, -77.658007), "Inglewood Dr, Rochester, NY 14619, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.251984, -77.639308), "Ironwood Dr, Rochester, NY 14616, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.267804, -77.661463), "Island Cottage Rd, Rochester, NY 14612, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.249769, -77.651620), "Jeanmoor Rd, Rochester, NY 14616, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.209289, -77.655063), "Joanne Dr, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.256777, -77.666467), "Juliet Crescent, Rochester, NY 14612, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.247955, -77.649710), "Kaymar Dr, Rochester, NY 14616, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.206617, -77.578773), "Kearney Dr, Rochester, NY 14617, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.142014, -77.540724), "Kent Park, Rochester, NY 14610, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.146507, -77.639508), "Kenwood Ave, Rochester, NY 14611, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.162800, -77.491017), "Keyel Dr, Rochester, NY 14625, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.135249, -77.550332), "Kimberly Dr, Rochester, NY 14610, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.072837, -77.591476), "Kramer St, Rochester, NY 14623, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.109522, -77.730818), "Labrea Dr, Rochester, NY 14624, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.175853, -77.610472), "Laforce St, Rochester, NY 14621, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.243606, -77.586238), "Lake Lea Rd, Rochester, NY 14617, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.253929, -77.636083), "Lake Meadow Dr, Rochester, NY 14612, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.242251, -77.578264), "Lake Shore Blvd, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.182599, -77.638847), "Lake View Park, Rochester, NY 14613, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.158312, -77.542894), "Lanark Crescent, Rochester, NY 14609, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.126867, -77.604528), "Laney Rd, Rochester, NY 14620, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.185029, -77.611113), "Lang St, Rochester, NY 14621, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.126877, -77.614743), "Langslow St, Rochester, NY 14620, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.252944, -77.679800), "Latta Rd, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.095091, -77.786619), "Lawnsbury Dr, Rochester, NY 14624, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.138923, -77.680262), "Lettington Ave, Rochester, NY 14624, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.218725, -77.592672), "List Ave, Rochester, NY 14617, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.071732, -77.643229), "Loreto Ave, Rochester, NY 14623, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.123592, -77.774645), "Loring Pl, Rochester, NY 14624, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.160167, -77.552865), "Luella St, Rochester, NY 14609, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.257067, -77.655283), "Lyncourt Park, Rochester, NY 14612, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.111697, -77.561743), "Lynnhaven Ct, Rochester, NY 14618, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.161557, -77.579060), "Main St E, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.201853, -77.668154), "Malden St, Rochester, NY 14615, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.260444, -77.649188), "Malo Ct, Rochester, NY 14612, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.214453, -77.664155), "Marble Cir, Rochester, NY 14615, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.214086, -77.664075), "Marble Dr, Rochester, NY 14615, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.132414, -77.653860), "Margaret St, Rochester, NY 14619, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.144017, -77.705016), "Marway Cir, Rochester, NY 14624, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.128393, -77.613966), "May St, Rochester, NY 14620, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.136480, -77.685960), "Meadowdale Dr, Rochester, NY 14624, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.143953, -77.596647), "Meigs St, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.166757, -77.566546), "Melville St, Rochester, NY 14609, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.215535, -77.655677), "Menard Dr, Rochester, NY 14616, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.162566, -77.553521), "Merchants Rd, Rochester, NY 14609, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.131304, -77.574389), "Meredith Ave, Rochester, NY 14618, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.202874, -77.669482), "Merrick St, Rochester, NY 14615, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.184469, -77.578938), "Midland Ave, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.133847, -77.654926), "Midvale Terrace, Rochester, NY 14619, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.244842, -77.595146), "Montcalm Dr, Rochester, NY 14617, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.130525, -77.614285), "Mt Hope Ave, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.201781, -77.659441), "Mt Read Blvd, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.254863, -77.638279), "Muriel Dr, Rochester, NY 14612, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.151795, -77.693349), "Normandale Dr, Rochester, NY 14624, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.256760, -77.649215), "N Park Dr, Rochester, NY 14612, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.203051, -77.609460), "Northfield Rd, Rochester, NY 14617, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.239666, -77.641768), "Northgate Rd, Rochester, NY 14616, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.139727, -77.558422), "Nunda Blvd, Rochester, NY 14610, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.216286, -77.585899), "Oakview Dr, Rochester, NY 14617, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.218447, -77.644671), "Oakwood Rd, Rochester, NY 14616, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.114487, -77.728792), "Old Ivy Cir, Rochester, NY 14624, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.213909, -77.660870), "Old Stone Ln, Rochester, NY 14615, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.159414, -77.634512), "Orchard St, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.251865, -77.655945), "Paddy Hill Cir, Rochester, NY 14616, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.249398, -77.654509), "Paddy Hill Dr, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.153115, -77.530515), "Park Rd, Rochester, NY 14610, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.165778, -77.569509), "Parsells Ave, Rochester, NY 14609, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.145872, -77.598297), "Pearl St, Rochester, NY 14607, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.137254, -77.546640), "Pelham Rd, Rochester, NY 14610, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.114759, -77.557479), "Pickford Dr, Rochester, NY 14618, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.250093, -77.663688), "Picturesque Dr, Rochester, NY 14616, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.232125, -77.584345), "Pine Grove Ave, Rochester, NY 14617, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.141539, -77.620424), "Plymouth Ave S, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.226215, -77.595256), "Poppy St, Rochester, NY 14617, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.135966, -77.647961), "Post Ave, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.075119, -77.589383), "Princess Dr, Rochester, NY 14623, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.122339, -77.770050), "Province Dr, Rochester, NY 14624, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.073776, -77.594084), "Queensway Rd, Rochester, NY 14623, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.108576, -77.749296), "Raven Wood, Rochester, NY 14624, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.175208, -77.634823), "Ravine Ave, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.180513, -77.610812), "Remington St, Rochester, NY 14621, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.253925, -77.638717), "Renay Dr, Rochester, NY 14612, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.207135, -77.679193), "Ridge Rd W, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.189839, -77.688558), "Ridgeway Ave, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.247430, -77.636921), "Ripplewood Dr, Rochester, NY 14616, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.142980, -77.593266), "Rising Pl, Rochester, NY 14607, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.245004, -77.589299), "Rock Beach Rd, Rochester, NY 14617, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.166423, -77.653263), "Rockview Terrace, Rochester, NY 14606, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.133123, -77.654372), "Rosalind St, Rochester, NY 14619, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.214599, -77.655705), "Rosecroft Dr, Rochester, NY 14616, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.176328, -77.559017), "Roseview Ave, Rochester, NY 14609, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.128363, -77.713288), "Rowley Dr, Rochester, NY 14624, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.250186, -77.642495), "Rumson Rd, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.249701, -77.640583), "Sandalwood Dr, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.205609, -77.618228), "Scholfield Rd W, Rochester, NY 14617, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.205766, -77.589385), "Seaford Dr, Rochester, NY 14617, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.198098, -77.609200), "Seneca Ave, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.216316, -77.549201), "Seneca Rd, Rochester, NY 14622, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.137744, -77.627047), "Seward St, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.218690, -77.684898), "Sharon Dr, Greece, NY 14626, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.259473, -77.653124), "Shorecliff Dr, Rochester, NY 14612, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.247627, -77.643179), "Sierra Dr, Rochester, NY 14616, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.118293, -77.806006), "Slater Creek Dr, Rochester, NY 14514, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.109529, -77.746548), "Sleepy Hollow, Rochester, NY 14624, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.098349, -77.786578), "Solmar Dr, Rochester, NY 14624, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.135953, -77.607563), "South Ave, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.112755, -77.561825), "Southwood Ln, Rochester, NY 14618, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.233545, -77.650871), "Sparling Dr, Rochester, NY 14616, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.124464, -77.769893), "Spicewood Ln, Rochester, NY 14624, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.073407, -77.640165), "St Patrick Dr, Rochester, NY 14623, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.227826, -77.599758), "St Paul Blvd, Rochester, NY 14617, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.178442, -77.625083), "St Paul St, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.200311, -77.710064), "Stallion Cir, Greece, NY 14626, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.127641, -77.614355), "Stewart St, Rochester, NY 14620, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.202089, -77.705749), "Stone Fence Rd, Greece, NY 14626, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.219168, -77.649365), "Stone Rd, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.131903, -77.593797), "Summit Dr, Rochester, NY 14620, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.255536, -77.653770), "Summit Hill Dr, Rochester, NY 14612, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.097209, -77.785077), "Sunridge Dr, Rochester, NY 14624, USA"));
+map.addOverlay(new createMarker(new GLatLng(41.786689, -74.300839), "Susan Ln, Rochester, NY 12446, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.136469, -77.590087), "Sycamore St, Rochester, NY 14620, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.131304, -77.574389), "Sylvan Rd, Rochester, NY 14618, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.070682, -77.603771), "Thompson Rd, Rochester, NY 14623, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.214569, -77.595116), "Thornton Rd, Rochester, NY 14617, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.207038, -77.660245), "Thorpe Crescent, Rochester, NY 14615, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.136248, -77.650965), "Thurston Rd, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.239438, -77.662853), "Tioga Cir, Rochester, NY 14616, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.240320, -77.662638), "Tioga Dr, Rochester, NY 14616, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.211194, -77.580188), "Titus Ave, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.109634, -77.550855), "Towpath Cir, Rochester, NY 14618, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.155850, -77.490110), "Tree Brook Dr, Rochester, NY 14625, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.158548, -77.488046), "Tree Top Dr, Rochester, NY 14625, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.216444, -77.588001), "Upland Dr, Rochester, NY 14617, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.154784, -77.615557), "Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.200627, -77.586971), "Veronica Dr, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.200720, -77.670787), "Vista Dr, Rochester, NY 14615, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.128780, -77.612991), "Wall St, Rochester, NY 14620, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.138891, -77.635091), "Walter Park, Rochester, NY 14611, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.177109, -77.541546), "Warrenton St, Rochester, NY 14609, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.182797, -77.599309), "Warsaw St, Rochester, NY 14621, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.061950, -77.650275), "W Henrietta Rd, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.125479, -77.755577), "Westside Dr, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.226030, -77.634455), "Wheeldon Dr, Rochester, NY 14616, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.250326, -77.657639), "Whelehan Cir, Rochester, NY 14616, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.249930, -77.657052), "Whelehan Dr, Rochester, NY 14616, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.252001, -77.643100), "White Oaks Dr, Rochester, NY 14616, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.125478, -77.642669), "Winbourne Rd, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.209564, -77.555266), "Winfield Rd, Rochester, NY 14622, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.163827, -77.545386), "Winton Rd N, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.136639, -77.645364), "Woodbine Ave, Rochester, NY, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.158630, -77.491063), "Woody Ln, Rochester, NY 14625, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.226861, -77.633565), "Worcester Rd, Rochester, NY 14616, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.186184, -77.498000), "Yorktown Dr, Webster, NY 14580, USA"));
+map.addOverlay(new createMarker(new GLatLng(43.070269, -77.594932), "Zornow Dr, Rochester, NY 14623, USA"));} }    </script>
+  </head>
+  <body onload="initialize()" onunload="GUnload()">
+    <div id="toppart" style="height: 50px;">
+        <p>Rochester Power Outages, Last updated: Saturday, May 08, 2010 at 7:54 PM
+.  Courtesy <A HREF="http://ebiz1.rge.com/cusweb/outage/roadOutages.aspx?town=ROCHESTER">RG&E</A>.</p>
+    </div>
+    <div id="map_canvas" style="height: 500px;"></div>
+  </body>
+</html>
