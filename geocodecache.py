@@ -113,9 +113,13 @@ def produceMapHeader(apikey, markers, centers):
 <style type="text/css">
     v\:* {behavior:url(#default#VML);}  html, body {width: 100%%; height: 100%%}  body {margin-top: 0px; margin-right: 0px; margin-left: 0px; margin-bottom: 0px}
 
-    p {
+    p, li {
         font-family:  Verdana, sans-serif;
         font-size: 13px;
+      }
+
+    a {
+        text-decoration: none;
       }
 
     .hidden { visibility: hidden; }
@@ -130,6 +134,13 @@ def produceMapHeader(apikey, markers, centers):
         var item = document.getElementById(divID);
         if (item) {
             item.className=(item.className=='unhidden')?'hidden':'unhidden';
+        }
+    }
+
+    function unhide(divID) {
+        var item = document.getElementById(divID);
+        if (item) {
+            item.className=(item.className=='hidden')?'unhidden':'hidden';
         }
     }
 
@@ -212,12 +223,7 @@ def produceMarker(lat, long, text):
 def produceMapBody(body):
     return """  <body onload="initialize()" onunload="GUnload()">
     <div id="map_canvas" style="width: 100%%; height: 100%%;"></div>
-    <div id="infobox" class="unhidden" style="top:25px; left:75px; position:absolute; background-color:white; border:2px solid black; width:50%%; opacity:0.8">
-        <div id="closebutton" style="top:2px; right:2px; position:absolute">
-            <a href="javascript:hide('infobox');"><img src="xbox.png" border=0 alt="X" title="We'll leave the light on for you."></a>
-        </div>
-        %s
-    </div>
+    %s
   </body>
 </html>
 """ % body
@@ -265,5 +271,31 @@ if __name__ == '__main__':
         else:
             s = ''
         sys.stdout.write(produceMapHeader(apikey, markerlist, citycenterlist))
-        sys.stdout.write(produceMapBody('<p><b>Map of Rochester-area Power Outages</b> as of %s (%i street%s).  Data from <A HREF="http://ebiz1.rge.com/cusweb/outage/index.aspx">RG&E</A>, all map-related blame to <a href="http://hoopycat.com/~rtucker/">Ryan Tucker</a> &lt;<a href="mailto:rtucker@gmail.com">rtucker@gmail.com</a>&gt;.</p><p style="font-size:xx-small;">%s</p>' % (lastupdated, len(markerlist), s, '; '.join(localelist))))
 
+        bodytext = """
+            <div id="infobox" class="unhidden" style="top:25px; left:75px; position:absolute; background-color:white; border:2px solid black; width:50%%; opacity:0.8">
+                <div id="closebutton" style="top:2px; right:2px; position:absolute">
+                    <a href="javascript:hide('infobox');"><img src="xbox.png" border=0 alt="X" title="We'll leave the light on for you."></a>
+                </div>
+                <p><b>Map of Rochester-area Power Outages</b> as of %s (%i street%s).  <a href="javascript:unhide('faqbox');">More information about this page...</a></p>
+                <p style="font-size:xx-small;">%s</p>
+            </div>
+
+            <div id="faqbox" class="hidden" style="top:45px; left:95px; position:absolute; background-color:white; border:2px solid black; width:75%%">
+                <div id="closebutton" style="top:2px; right:2px; position:absolute">
+                    <a href="javascript:hide('faqbox');"><img src="xbox.png" border=0 alt="X" title="OK, OK, I'll show you the map."></a>
+                </div>
+                <p><b>IF YOU HAVE A LIFE-THREATENING ELECTRICAL EMERGENCY, CALL RG&E AT 1-800-743-1701 OR CALL 911 IMMEDIATELY.  DO NOT TOUCH DOWNED ELECTRICAL LINES, EVER.  EVEN IF YOUR STREET IS LISTED HERE.</b></p>
+                <hr>
+                <p>The source data for this map is published by <A HREF="http://ebiz1.rge.com/cusweb/outage/index.aspx">RG&E</A>, but all map-related blame should go to <a href="http://hoopycat.com/~rtucker/">Ryan Tucker</a> &lt;<a href="mailto:rtucker@gmail.com">rtucker@gmail.com</a>&gt;.</p>
+                <p>Some important tips to keep in mind...</p>
+                <ul>
+                    <li><b>RG&E only publishes a list of street names.</b> This map's pointer will end up in the geographic center of the street, which will undoubtedly be wrong for really long streets.  Look for clusters of outages.</li>
+                    <li><b>This map doesn't indicate the actual quantity of power outages or people without power.</b> There may be just one house without power on a street, or every house on a street.  There may be multiple unrelated outages on one street, too.  There's no way to know.</li>
+                </ul>
+                <p>Also, be sure to check out RG&E's <a href="http://rge.com/Outages/">Outage Central</a> for official information, to report outages, or to check on the status of an outage.</p>
+            </div>
+        """ % (lastupdated, len(markerlist), s, '; '.join(localelist))
+
+        sys.stdout.write(produceMapBody(bodytext))
+ 
