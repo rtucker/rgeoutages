@@ -31,11 +31,12 @@ $GENERATOR $LOCATIONS > $TEMPFILE
 
 if [ -n "`cat $TEMPFILE`" ]; then
     cp $TEMPFILE $HTMLFILE
-    rm $TEMPFILE
 elif [ -z "$LOCATIONS" ] ; then
     # there are no outages!  do something cool.
     true
 else
     echo "$TEMPFILE was empty, utoh"
 fi
+
+rm $TEMPFILE
 
