@@ -1,0 +1,133 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title>Current Power Outage Map for Rochester, New York</title>
+<style type="text/css">
+    v\:* {behavior:url(#default#VML);}  html, body {width: 100%; height: 100%}  body {margin-top: 0px; margin-right: 0px; margin-left: 0px; margin-bottom: 0px}
+
+    p, li {
+        font-family:  Verdana, sans-serif;
+        font-size: 13px;
+      }
+
+    a {
+        text-decoration: none;
+      }
+
+    .hidden { visibility: hidden; }
+    .unhidden { visibility: visible; }
+
+</style>
+<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAA30Jhq_DCCBUDYXZhoCyheRSUYQ6bykvEQfbcB8o1clNVPLJCmBS95D0ZW-pGwa1P39Qz-hMw8rGwxA" type="text/javascript"></script>
+<script src="http://gmaps-utility-library.googlecode.com/svn/trunk/markermanager/release/src/markermanager.js"></script>
+<script type="text/javascript">
+
+    function hide(divID) {
+        var item = document.getElementById(divID);
+        if (item) {
+            item.className=(item.className=='unhidden')?'hidden':'unhidden';
+        }
+    }
+
+    function unhide(divID) {
+        var item = document.getElementById(divID);
+        if (item) {
+            item.className=(item.className=='hidden')?'unhidden':'hidden';
+        }
+    }
+
+    var map = null;
+    var mgr = null;
+
+    function initialize() {
+        if (GBrowserIsCompatible()) {
+            map = new GMap2(document.getElementById("map_canvas"));
+            map.setCenter(new GLatLng(43.15661, -77.6253), 11);
+            map.setUIToDefault();
+            mgr = new MarkerManager(map);
+            window.setTimeout(setupMarkers, 0);
+
+            // Monitor the window resize event and let the map know when it occurs
+            if (window.attachEvent) { 
+                window.attachEvent("onresize", function() {this.map.onResize()} );
+            } else {
+                window.addEventListener("resize", function() {this.map.onResize()} , false);
+            }
+        }
+    }
+
+    function createMarker(point, text) {
+        var baseIcon = new GIcon(G_DEFAULT_ICON);
+        baseIcon.shadow = "http://www.google.com/mapfiles/shadow50.png";
+        baseIcon.iconSize = new GSize(20, 34);
+        baseIcon.shadowSize = new GSize(37, 34);
+        baseIcon.iconAnchor = new GPoint(9, 34);
+        baseIcon.infoWindowAnchor = new GPoint(9, 2);
+
+        var ouricon = new GIcon(baseIcon);
+        ouricon.image = "http://www.google.com/mapfiles/marker.png";
+
+        // Set up our GMarkerOptions object
+        markerOptions = { icon:ouricon };
+        var marker = new GMarker(point, markerOptions);
+
+        GEvent.addListener(marker, "click", function() {
+            marker.openInfoWindowHtml(text);
+        });
+        return marker;
+    }
+
+
+            function setupMarkers() {
+                var batch = [];
+                batch.push(new createMarker(new GLatLng(43.119722, -77.805833), "North Chili, NY, USA"));
+batch.push(new createMarker(new GLatLng(43.119722, -77.805833), "North Chili, NY, USA"));
+batch.push(new createMarker(new GLatLng(43.245875, -77.503479), "Fairview Cir, Webster, NY 14580, USA"));
+batch.push(new createMarker(new GLatLng(43.248458, -77.502348), "Forest Lawn Dr, Webster, NY 14580, USA"));
+batch.push(new createMarker(new GLatLng(43.248701, -77.502900), "Forest Lawn Rd, Webster, NY 14580, USA"));
+batch.push(new createMarker(new GLatLng(43.251603, -77.459161), "Lake Rd, Webster, NY 14580, USA"));
+batch.push(new createMarker(new GLatLng(43.244787, -77.507164), "Lake View Terrace, Webster, NY 14580, USA"));
+batch.push(new createMarker(new GLatLng(43.242993, -77.511528), "Locust Hill Dr, Webster, NY 14580, USA"));
+batch.push(new createMarker(new GLatLng(43.245911, -77.504571), "McArthur Rd, Webster, NY 14580, USA"));
+batch.push(new createMarker(new GLatLng(43.371109, -75.414559), "Webster Hill Rd/Oatman Rd, Western, NY 13309, USA"));
+batch.push(new createMarker(new GLatLng(43.245993, -77.501485), "Tanglewood Ct, Webster, NY 14580, USA"));
+batch.push(new createMarker(new GLatLng(43.242807, -77.499945), "Vosburg Rd, Webster, NY 14580, USA"));
+batch.push(new createMarker(new GLatLng(43.242181, -77.512481), "Windward Shores Dr, Webster, NY 14580, USA"));
+                mgr.addMarkers(batch, 1);
+                mgr.refresh();
+            }
+        
+        </script>
+        </head>
+      <body onload="initialize()" onunload="GUnload()">
+    <div id="map_canvas" style="width: 100%; height: 100%;"></div>
+    
+            <div id="infobox" class="unhidden" style="top:25px; left:75px; position:absolute; background-color:white; border:2px solid black; width:50%; opacity:0.8">
+                <div id="closebutton" style="top:2px; right:2px; position:absolute">
+                    <a href="javascript:hide('infobox');"><img src="xbox.png" border=0 alt="X" title="We'll leave the light on for you."></a>
+                </div>
+                <p><b>Map of Rochester-area Power Outages</b> as of Friday, May 14, 2010 at 5:24 PM
+ (13 streets).  <a href="javascript:unhide('faqbox');">More information about this page...</a></p>
+                <p style="font-size:xx-small;"><a href="http://ebiz1.rge.com/cusweb/outage/roadOutages.aspx?town=NORTH%20CHILI">NORTH CHILI</a>:&nbsp;2&nbsp;streets; <a href="http://ebiz1.rge.com/cusweb/outage/roadOutages.aspx?town=WEBSTER">WEBSTER</a>:&nbsp;11&nbsp;streets</p>
+            </div>
+
+            <div id="faqbox" class="hidden" style="top:45px; left:95px; position:absolute; background-color:white; border:2px solid black; width:75%">
+                <div id="closebutton" style="top:2px; right:2px; position:absolute">
+                    <a href="javascript:hide('faqbox');"><img src="xbox.png" border=0 alt="X" title="OK, OK, I'll show you the map."></a>
+                </div>
+                <p><b>IF YOU HAVE A LIFE-THREATENING ELECTRICAL EMERGENCY, CALL RG&E AT 1-800-743-1701 OR CALL 911 IMMEDIATELY.  DO NOT TOUCH DOWNED ELECTRICAL LINES, EVER.  EVEN IF YOUR STREET IS LISTED HERE.</b></p>
+                <hr>
+                <p>The source data for this map is published by <A HREF="http://ebiz1.rge.com/cusweb/outage/index.aspx">RG&E</A>, but all map-related blame should go to <a href="http://hoopycat.com/~rtucker/">Ryan Tucker</a> &lt;<a href="mailto:rtucker@gmail.com">rtucker@gmail.com</a>&gt;.</p>
+                <p>Some important tips to keep in mind...</p>
+                <ul>
+                    <li><b>RG&E only publishes a list of street names.</b> This map's pointer will end up in the geographic center of the street, which will undoubtedly be wrong for really long streets.  Look for clusters of outages.</li>
+                    <li><b>This map doesn't indicate the actual quantity of power outages or people without power.</b> There may be just one house without power on a street, or every house on a street.  There may be multiple unrelated outages on one street, too.  There's no way to know.</li>
+                </ul>
+                <p>Also, be sure to check out RG&E's <a href="http://rge.com/Outages/">Outage Central</a> for official information, to report outages, or to check on the status of an outage.</p>
+            </div>
+        
+  </body>
+</html>
