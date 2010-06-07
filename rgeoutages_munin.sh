@@ -21,6 +21,6 @@ elif [ "$1" = "autoconf" ]; then
 
 else
     outagecount=`cat $BASEDIR/outages_*.txt | wc -l`
-    echo "outages.data $outagecount"
+    echo "outages.value $outagecount"
 fi
 
