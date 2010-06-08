@@ -10,7 +10,7 @@ wget -q -O $TEMPFILE http://ebiz1.rge.com/cusweb/outage/index.aspx
 LOCATIONS=`grep "<option value=\"14|" $TEMPFILE | cut -d'|' -f2 | cut -d'"' -f1 | sed "s/ /%20/g" | xargs`
 
 rm $TEMPFILE
-rm /var/www/hoopycat.com/html/rgeoutages/outages_*.txt
+rm /var/www/hoopycat.com/html/rgeoutages/outages_*.txt 2>/dev/null
 
 for i in $LOCATIONS
 do
