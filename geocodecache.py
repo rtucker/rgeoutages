@@ -11,6 +11,12 @@ try:
 except:
     import simplejson as json
 
+try:
+    import secrets
+except:
+    sys.stderr.write("You need to create a secrets.py file with a Google Maps API key.")
+    sys.exit(1)
+
 def initDB(filename="/tmp/rgeoutages.sqlite3"):
     """Connect to and initialize the cache database.
 
@@ -230,7 +236,10 @@ def produceMapBody(body):
 
 if __name__ == '__main__':
     db = initDB()
-    apikey = "ABQIAAAA30Jhq_DCCBUDYXZhoCyheRSUYQ6bykvEQfbcB8o1clNVPLJCmBS95D0ZW-pGwa1P39Qz-hMw8rGwxA"
+    try:
+        apikey = secrets.apikey
+    except:
+        apikey = 'FIXME FIXME FIXME'
 
     localelist = []
     markerlist = []
