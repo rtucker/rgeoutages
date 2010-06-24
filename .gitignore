@@ -1,3 +1,4 @@
 index.html
 outages_*
 secrets.py
+*.pyc
