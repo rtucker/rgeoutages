@@ -50,7 +50,12 @@ def fetchGeocode(location):
     response = urllib2.urlopen("http://maps.google.com/maps/api/geocode/json?address=%s&sensor=false" % sanelocation)
 
     jsondata = response.read()
-    data = json.loads(jsondata)['results'][0]
+    jsondict = json.loads(jsondata)
+
+    if jsondict['results'] == []:
+        raise Exception("Empty results string: " + jsondict['status'])
+
+    data = jsondict['results'][0]
     
     viewport = (    data['geometry']['viewport']['southwest']['lat'],
                     data['geometry']['viewport']['southwest']['lng'],
@@ -261,9 +266,12 @@ if __name__ == '__main__':
         citycenterlist.append(produceMarker(citycenter['latitude'], citycenter['longitude'], citycenter['formattedaddress']))
 
         for j in fd.readlines():
-            streetinfo = geocode(db, cleanname, j)
-            markerlist.append(produceMarker(streetinfo['latitude'], streetinfo['longitude'], streetinfo['formattedaddress']))
-            count += 1
+            try:
+                streetinfo = geocode(db, cleanname, j)
+                markerlist.append(produceMarker(streetinfo['latitude'], streetinfo['longitude'], streetinfo['formattedaddress']))
+                count += 1
+            except Exception, e:
+                sys.stdout.write("<!-- Geocode fail: %s in %s gave %s -->\n" % (j, cleanname, e.__str__()))
 
         if count > 1:
             s = 's'
