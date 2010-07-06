@@ -274,6 +274,12 @@ def produceMapHeader(apikey, markers, centers, points):
         """ % '\n'.join(markers)
 
     out += """
+    /* distance: %.2f
+       minimum corner: %.4f, %.4f
+       maximum corner: %.4f, %.4f */
+    """ % (distance, minLat, minLng, maxLat, maxLng)
+
+    out += """
     function initialize() {
         if (GBrowserIsCompatible()) {
             map = new GMap2(document.getElementById("map_canvas"));
