@@ -235,15 +235,17 @@ def produceMapHeader(apikey, markers, centers, points):
 
     # Guestimate zoom by finding diagonal distance (in miles)
     distance = distance_on_unit_sphere(minLat, minLng, maxLat, maxLng) * 3960
-    if distance < 1:
-        zoom = 14
-    elif distance < 2:
-        zoom = 13
+    if distance < 2:
+        zoom = 15
     elif distance < 3:
-        zoom = 12
+        zoom = 14
+    elif distance < 5:
+        zoom = 13
     elif distance < 7:
+        zoom = 12
+    elif distance < 11:
         zoom = 11
-    elif distance < 15:
+    elif distance < 13:
         zoom = 10
     else:
         zoom = 9
