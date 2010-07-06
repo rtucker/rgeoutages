@@ -223,7 +223,7 @@ def produceMapHeader(apikey, markers, centers, points):
 
     # Iterate through and expand the range, ignoring outliers
     for i in points:
-        if distance_on_unit_sphere((minLat+maxLat)/2, (minLng+maxLng)/2, i['latitude'], i['longitude']) < 50:
+        if distance_on_unit_sphere((minLat+maxLat)/2, (minLng+maxLng)/2, i['latitude'], i['longitude'])*3960 < 50:
             minLat = min(i['latitude'], minLat)
             maxLat = max(i['latitude'], maxLat)
             minLng = min(i['longitude'], minLng)
