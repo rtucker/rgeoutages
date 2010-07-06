@@ -143,7 +143,7 @@ def distance_on_unit_sphere(lat1, long1, lat2, long2):
     # in your favorite set of units to get length.
     return arc
 
-def produceMapHeader(apikey, markers, centers):
+def produceMapHeader(apikey, markers, centers, points):
     """Produces a map header given an API key and a list of produceMarkers"""
 
     out = """
@@ -222,7 +222,7 @@ def produceMapHeader(apikey, markers, centers):
     maxLng = -77.6253
 
     # Iterate through and expand based upon viewport
-    for i in markers:
+    for i in points:
         sw_lat, sw_lng, ne_lat, ne_lng = i['viewport']
         minLat = min(sw_lat, minLat)
         maxLat = max(ne_lat, maxLat)
@@ -317,7 +317,8 @@ if __name__ == '__main__':
 
     localelist = []
     markerlist = []
-    citycenterlist = [] 
+    citycenterlist = []
+    pointlist = []
 
     stoplist = ['HONEOYE%20FL', 'HONEOYE', 'N%20CHILI']
 
@@ -333,11 +334,13 @@ if __name__ == '__main__':
 
         citycenter = geocode(db, cleanname, '')
         citycenterlist.append(produceMarker(citycenter['latitude'], citycenter['longitude'], citycenter['formattedaddress']))
+        pointlist.append(citycenter)
 
         for j in fd.readlines():
             try:
                 streetinfo = geocode(db, cleanname, j)
                 markerlist.append(produceMarker(streetinfo['latitude'], streetinfo['longitude'], streetinfo['formattedaddress']))
+                pointlist.append(streetinfo)
                 count += 1
             except Exception, e:
                 sys.stdout.write("<!-- Geocode fail: %s in %s gave %s -->\n" % (j, cleanname, e.__str__()))
@@ -356,7 +359,7 @@ if __name__ == '__main__':
             s = 's'
         else:
             s = ''
-        sys.stdout.write(produceMapHeader(apikey, markerlist, citycenterlist))
+        sys.stdout.write(produceMapHeader(apikey, markerlist, citycenterlist, pointlist))
 
         bodytext = """
             <div id="infobox" class="unhidden" style="top:25px; left:75px; position:absolute; background-color:white; border:2px solid black; width:50%%; opacity:0.8">
