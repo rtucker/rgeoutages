@@ -1,0 +1,8 @@
+rgeoutages: A mapping tool for power outage data
+
+This repository contains the backend code for http://hoopycat.com/rgeoutages/
+which displays a reasonably up-to-date map of power outages in the Rochester
+Gas and Electric service area.
+
+TODO: Consider using OpenStreetMap for mapping backend
+
