@@ -223,11 +223,10 @@ def produceMapHeader(apikey, markers, centers, points):
 
     # Iterate through and expand based upon viewport
     for i in points:
-        sw_lat, sw_lng, ne_lat, ne_lng = i['viewport']
-        minLat = min(sw_lat, minLat)
-        maxLat = max(ne_lat, maxLat)
-        minLng = min(ne_lng, minLng)
-        maxLng = max(sw_lng, maxLng)
+        minLat = min(i['latitude'], minLat)
+        maxLat = max(i['latitude'], maxLat)
+        minLng = min(i['longitude'], minLng)
+        maxLng = max(i['longitude'], maxLng)
 
     # Calculate center
     centerLat = (minLat + maxLat) / 2
