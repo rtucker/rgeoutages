@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import math
 import sqlite3
 import sys
 import time
@@ -111,6 +112,37 @@ def geocode(db, town, location):
 
         return fetchresult
 
+def distance_on_unit_sphere(lat1, long1, lat2, long2):
+    # From http://www.johndcook.com/python_longitude_latitude.html
+
+    # Convert latitude and longitude to 
+    # spherical coordinates in radians.
+    degrees_to_radians = math.pi/180.0
+        
+    # phi = 90 - latitude
+    phi1 = (90.0 - lat1)*degrees_to_radians
+    phi2 = (90.0 - lat2)*degrees_to_radians
+        
+    # theta = longitude
+    theta1 = long1*degrees_to_radians
+    theta2 = long2*degrees_to_radians
+        
+    # Compute spherical distance from spherical coordinates.
+        
+    # For two locations in spherical coordinates 
+    # (1, theta, phi) and (1, theta, phi)
+    # cosine( arc length ) = 
+    #    sin phi sin phi' cos(theta-theta') + cos phi cos phi'
+    # distance = rho * arc length
+    
+    cos = (math.sin(phi1)*math.sin(phi2)*math.cos(theta1 - theta2) + 
+           math.cos(phi1)*math.cos(phi2))
+    arc = math.acos( cos )
+
+    # Remember to multiply arc by the radius of the earth 
+    # in your favorite set of units to get length.
+    return arc
+
 def produceMapHeader(apikey, markers, centers):
     """Produces a map header given an API key and a list of produceMarkers"""
 
@@ -159,23 +191,6 @@ def produceMapHeader(apikey, markers, centers):
     var map = null;
     var mgr = null;
 
-    function initialize() {
-        if (GBrowserIsCompatible()) {
-            map = new GMap2(document.getElementById("map_canvas"));
-            map.setCenter(new GLatLng(43.15661, -77.6253), 11);
-            map.setUIToDefault();
-            mgr = new MarkerManager(map);
-            window.setTimeout(setupMarkers, 0);
-
-            // Monitor the window resize event and let the map know when it occurs
-            if (window.attachEvent) { 
-                window.attachEvent("onresize", function() {this.map.onResize()} );
-            } else {
-                window.addEventListener("resize", function() {this.map.onResize()} , false);
-            }
-        }
-    }
-
     function createMarker(point, text) {
         var baseIcon = new GIcon(G_DEFAULT_ICON);
         baseIcon.shadow = "http://www.google.com/mapfiles/shadow50.png";
@@ -199,6 +214,40 @@ def produceMapHeader(apikey, markers, centers):
 
 """ % apikey
 
+    # Determine center of map:
+    # Initialize variables
+    minLat = 43.15661
+    maxLat = 43.15661
+    minLng = -77.6253
+    maxLng = -77.6253
+
+    # Iterate through and expand based upon viewport
+    for i in markers:
+        sw_lat, sw_lng, ne_lat, ne_lng = i['viewport']
+        minLat = min(sw_lat, minLat)
+        maxLat = max(ne_lat, maxLat)
+        minLng = min(ne_lng, minLng)
+        maxLng = max(sw_lng, maxLng)
+
+    # Calculate center
+    centerLat = (minLat + maxLat) / 2
+    centerLng = (minLng + maxLng) / 2
+
+    # Guestimate zoom by finding diagonal distance (in miles)
+    distance = distance_on_unit_sphere(minLat, minLng, maxLat, maxLng) * 3960
+    if distance < 1:
+        zoom = 14
+    elif distance < 2:
+        zoom = 13
+    elif distance < 3:
+        zoom = 12
+    elif distance < 7:
+        zoom = 11
+    elif distance < 15:
+        zoom = 10
+    else:
+        zoom = 9
+
     if len(markers) > 300:
         out += """
             function setupMarkers() {
@@ -211,6 +260,7 @@ def produceMapHeader(apikey, markers, centers):
                 mgr.refresh();
             }
         """ % ('\n'.join(markers), '\n'.join(centers))
+        zoom = min(zoom, 11)
     else:
         out += """
             function setupMarkers() {
@@ -220,6 +270,24 @@ def produceMapHeader(apikey, markers, centers):
                 mgr.refresh();
             }
         """ % '\n'.join(markers)
+
+    out += """
+    function initialize() {
+        if (GBrowserIsCompatible()) {
+            map = new GMap2(document.getElementById("map_canvas"));
+            map.setCenter(new GLatLng(%.4f, %.4f), %i);
+            map.setUIToDefault();
+            mgr = new MarkerManager(map);
+            window.setTimeout(setupMarkers, 0);
+
+            // Monitor the window resize event and let the map know when it occurs
+            if (window.attachEvent) { 
+                window.attachEvent("onresize", function() {this.map.onResize()} );
+            } else {
+                window.addEventListener("resize", function() {this.map.onResize()} , false);
+            }
+        }
+    } """ % (centerLat, centerLng, zoom)
 
     out += """
         </script>
