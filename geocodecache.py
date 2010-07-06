@@ -17,7 +17,7 @@ except:
     sys.stderr.write("You need to create a secrets.py file with a Google Maps API key.")
     sys.exit(1)
 
-def initDB(filename="/tmp/rgeoutages.sqlite3"):
+def initDB(filename="rgeoutages.sqlite3"):
     """Connect to and initialize the cache database.
 
     Optional: Filename of database
@@ -256,7 +256,7 @@ if __name__ == '__main__':
         if i in stoplist:
             continue
 
-        fd = open('/var/www/hoopycat.com/html/rgeoutages/outages_%s.txt' % i)
+        fd = open('outages_%s.txt' % i)
         lastupdated = fd.readline()
         cleanname = i.replace('%20', ' ')
 

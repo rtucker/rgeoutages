@@ -1,7 +1,12 @@
 #!/bin/bash
 
-GENERATOR=/var/www/hoopycat.com/html/rgeoutages/geocodecache.py
-HTMLFILE=/var/www/hoopycat.com/html/rgeoutages/index.html
+BASEDIR=/var/www/hoopycat.com/html/rgeoutages/
+GENERATOR=$BASEDIR/geocodecache.py
+HTMLFILE=$BASEDIR/index.html
+
+# Test for sanity
+[ -d "$BASEDIR" ] || (echo "Base directory missing: $BASEDIR"; exit 1)
+[ -x "$GENERATOR" ] || (echo "Generator script not executable: $GENERATOR"; exit 1)
 
 # Fetch location list
 TEMPFILE=`tempfile`
@@ -10,12 +15,15 @@ wget -q -O $TEMPFILE http://ebiz1.rge.com/cusweb/outage/index.aspx
 LOCATIONS=`grep "<option value=\"14|" $TEMPFILE | cut -d'|' -f2 | cut -d'"' -f1 | sed "s/ /%20/g" | xargs`
 
 rm $TEMPFILE
-rm /var/www/hoopycat.com/html/rgeoutages/outages_*.txt 2>/dev/null
+
+# Fetch street data
+cd $BASEDIR || (echo "Could not cd to $BASEDIR"; exit 1)
+rm outages_*.txt 2>/dev/null
 
 for i in $LOCATIONS
 do
     TEMPFILE=`tempfile`
-    OUTFILE=/var/www/hoopycat.com/html/rgeoutages/outages_$i.txt
+    OUTFILE=outages_$i.txt
     wget -q -O $TEMPFILE "http://ebiz1.rge.com/cusweb/outage/roadoutages.aspx?town=$i"
     grep "wcHeader_Label3" $TEMPFILE \
      | cut -d'>' -f2 | cut -d'<' -f1 > $OUTFILE
