@@ -243,9 +243,9 @@ def produceMapHeader(apikey, markers, centers, points):
         zoom = 13
     elif distance < 13:
         zoom = 12
-    elif distance < 17:
+    elif distance < 25:
         zoom = 11
-    elif distance < 19:
+    elif distance < 35:
         zoom = 10
     else:
         zoom = 9
