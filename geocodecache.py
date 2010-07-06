@@ -221,12 +221,13 @@ def produceMapHeader(apikey, markers, centers, points):
     minLng = -77.6253
     maxLng = -77.6253
 
-    # Iterate through and expand based upon viewport
+    # Iterate through and expand the range, ignoring outliers
     for i in points:
-        minLat = min(i['latitude'], minLat)
-        maxLat = max(i['latitude'], maxLat)
-        minLng = min(i['longitude'], minLng)
-        maxLng = max(i['longitude'], maxLng)
+        if distance_on_unit_sphere((minLat+maxLat)/2, (minLng+maxLng)/2, i['latitude'], i['longitude']) < 50:
+            minLat = min(i['latitude'], minLat)
+            maxLat = max(i['latitude'], maxLat)
+            minLng = min(i['longitude'], minLng)
+            maxLng = max(i['longitude'], maxLng)
 
     # Calculate center
     centerLat = (minLat + maxLat) / 2
