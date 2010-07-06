@@ -120,6 +120,7 @@ def produceMapHeader(apikey, markers, centers):
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml">
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="refresh" content="600"/>
     <title>Current Power Outage Map for Rochester, New York</title>
 <style type="text/css">
     v\:* {behavior:url(#default#VML);}  html, body {width: 100%%; height: 100%%}  body {margin-top: 0px; margin-right: 0px; margin-left: 0px; margin-bottom: 0px}
