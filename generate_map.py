@@ -219,8 +219,8 @@ def produceMapHeader(apikey, markers, centers, points):
     # Initialize variables
     minLat = 44.9
     maxLat = 42.1
-    minLng = -78.9
-    maxLng = -76.1
+    minLng = -76.1
+    maxLng = -78.9
 
     # Iterate through and expand the range, ignoring outliers
     for i in points:
