@@ -378,8 +378,8 @@ if __name__ == '__main__':
                 <div id="closebutton" style="top:2px; right:2px; position:absolute">
                     <a href="javascript:hide('infobox');"><img src="xbox.png" border=0 alt="X" title="We'll leave the light on for you."></a>
                 </div>
-                <p><b>Map of Rochester-area Power Outages</b> as of %s (%i street%s).  <a href="javascript:unhide('faqbox');">More info</a>,
-                      <a href="javascript:unhide('chartbox');">power outage graph</a></p>.
+                <p><b>Map of Rochester-area Power Outages</b> as of %s (%i street%s).  See <a href="javascript:unhide('faqbox');">more information about this map</a>, or
+                      <a href="javascript:unhide('chartbox');">view a graph</a> of recent power outage totals.</p>
                 <p style="font-size:xx-small;">%s</p>
             </div>
 
@@ -397,10 +397,10 @@ if __name__ == '__main__':
                 </ul>
                 <p>Also, be sure to check out RG&E's <a href="http://rge.com/Outages/">Outage Central</a> for official information, to report outages, or to check on the status of an outage.</p>
 
-                <p>This is version %s, last pulled %s.</p>
+                <p>This is revision %s (%s).</p>
             </div>
 
-            <div id="chartbox" class="hidden" style="top:45px; left:95px; position:absolute; background-color:white; border:2px solid black; width:500px">
+            <div id="chartbox" class="hidden" style="top:45px; left:95px; position:absolute; background-color:white; border:2px solid black; width:505px">
                 <div id="closebutton" style="top:2px; right:2px; position:absolute">
                     <a href="javascript:hide('chartbox');"><img src="xbox.png" border=0 alt="X" title="That was then; this is now."></a>
                 </div>
