@@ -192,7 +192,7 @@ def produceMapHeader(apikey, markers, centers, points):
     var map = null;
     var mgr = null;
 
-    function createMarker(point, text) {
+    function createMarker(point, text, color) {
         var baseIcon = new GIcon(G_DEFAULT_ICON);
         baseIcon.shadow = "http://www.google.com/mapfiles/shadow50.png";
         baseIcon.iconSize = new GSize(20, 34);
@@ -201,7 +201,7 @@ def produceMapHeader(apikey, markers, centers, points):
         baseIcon.infoWindowAnchor = new GPoint(9, 2);
 
         var ouricon = new GIcon(baseIcon);
-        ouricon.image = "http://www.google.com/mapfiles/marker.png";
+        ouricon.image = "http://www.google.com/mapfiles/marker_" + color + ".png";
 
         // Set up our GMarkerOptions object
         markerOptions = { icon:ouricon };
@@ -305,9 +305,26 @@ def produceMapHeader(apikey, markers, centers, points):
 
     return out
 
-def produceMarker(lat, long, text):
-    """Produces a google maps marker given a latitude, longitude, and text"""
-    return 'batch.push(new createMarker(new GLatLng(%f, %f), "%s"));' % (lat, long, text)
+def produceMarker(lat, long, text, firstreport=-1):
+    """Produces a google maps marker given a latitude, longitude, text, and first report time"""
+    if firstreport > 0:
+        age = time.time()-firstreport
+        nicetime = time.asctime(time.localtime(firstreport))
+        if age < 10*60:
+            color = 'purple'
+        elif age < 20*60:
+            color = 'blue'
+        elif age < 30*60:
+            color = 'green'
+        elif age < 40*60:
+            color = 'yellow'
+        elif age < 50*60:
+            color = 'orange'
+        else:
+            color = 'red'
+        return 'batch.push(new createMarker(new GLatLng(%f, %f), "%s<br>First reported: %s", "%s"));' % (lat, long, text, nicetime, color)
+    else:
+        return 'batch.push(new createMarker(new GLatLng(%f, %f), "%s", "grey"));' % (lat, long, text)
 
 def produceMapBody(body):
     return """  <body onload="initialize()" onunload="GUnload()">
@@ -334,6 +351,15 @@ if __name__ == '__main__':
     git_version = open('.git/refs/heads/master','r').read()
     git_modtime = time.asctime(time.localtime(os.stat('.git/refs/heads/master').st_mtime))
 
+    try:
+        # open the history file (how long current outages have been there)
+        historyfd = open('history.json','r')
+        historydict = json.load(historyfd)
+        historyfd.close()
+    except IOError:
+        historydict = {}
+    newhistorydict = {}
+
     for i in sys.argv[1:]:
         if i in stoplist:
             continue
@@ -351,8 +377,13 @@ if __name__ == '__main__':
         for j in fd.readlines():
             try:
                 streetinfo = geocode(db, cleanname, j)
-                markerlist.append(produceMarker(streetinfo['latitude'], streetinfo['longitude'], streetinfo['formattedaddress']))
+                if streetinfo['formattedaddress'] in historydict.keys():
+                    firstreport = historydict[streetinfo['formattedaddress']]
+                else:
+                    firstreport = time.time()
+                markerlist.append(produceMarker(streetinfo['latitude'], streetinfo['longitude'], streetinfo['formattedaddress'], firstreport))
                 pointlist.append(streetinfo)
+                newhistorydict[streetinfo['formattedaddress']] = firstreport
                 count += 1
             except Exception, e:
                 sys.stdout.write("<!-- Geocode fail: %s in %s gave %s -->\n" % (j, cleanname, e.__str__()))
@@ -363,6 +394,10 @@ if __name__ == '__main__':
             s = ''
 
         localelist.append('<a href="http://ebiz1.rge.com/cusweb/outage/roadOutages.aspx?town=%s">%s</a>:&nbsp;%i&nbsp;street%s' % (i, cleanname, count, s))
+
+    newhistoryfd = open('history.json','w')
+    json.dump(newhistorydict, newhistoryfd)
+    newhistoryfd.close()
 
     if len(markerlist) > 0:
         if len(markerlist) > 300:
