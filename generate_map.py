@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import math
+import os
 import sqlite3
 import sys
 import time
@@ -330,6 +331,9 @@ if __name__ == '__main__':
 
     stoplist = ['HONEOYE%20FL', 'HONEOYE', 'N%20CHILI']
 
+    git_version = open('.git/refs/heads','r').readline()
+    git_modtime = time.asctime(time.localtime(os.stat('.git/refs/heads').st_mtime))
+
     for i in sys.argv[1:]:
         if i in stoplist:
             continue
@@ -392,6 +396,8 @@ if __name__ == '__main__':
                     <li><b>This map doesn't indicate the actual quantity of power outages or people without power.</b> There may be just one house without power on a street, or every house on a street.  There may be multiple unrelated outages on one street, too.  There's no way to know.</li>
                 </ul>
                 <p>Also, be sure to check out RG&E's <a href="http://rge.com/Outages/">Outage Central</a> for official information, to report outages, or to check on the status of an outage.</p>
+
+                <p>This is version %s, last modified %s.</p>
             </div>
 
             <div id="chartbox" class="hidden" style="top:45px; left:95px; position:absolute; background-color:white; border:2px solid black; width:500px">
@@ -401,7 +407,7 @@ if __name__ == '__main__':
                 <img src="outagechart.png" title="Graph may be out of date by many hours.">
             </div>
 
-        """ % (lastupdated, len(markerlist), s, '; '.join(localelist))
+        """ % (lastupdated, len(markerlist), s, '; '.join(localelist), git_version, git_modtime)
 
         sys.stdout.write(produceMapBody(bodytext))
  

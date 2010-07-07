@@ -1,7 +1,7 @@
 #!/bin/bash
 
 BASEDIR=/var/www/hoopycat.com/html/rgeoutages/
-GENERATOR=$BASEDIR/geocodecache.py
+GENERATOR=$BASEDIR/generate_map.py
 HTMLFILE=$BASEDIR/index.html
 
 # Test for sanity
