@@ -3,6 +3,7 @@
 BASEDIR=/var/www/hoopycat.com/html/rgeoutages/
 GENERATOR=$BASEDIR/generate_map.py
 HTMLFILE=$BASEDIR/index.html
+TZ=America/New_York
 
 # Test for sanity
 [ -d "$BASEDIR" ] || (echo "Base directory missing: $BASEDIR"; exit 1)
