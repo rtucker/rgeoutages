@@ -374,7 +374,7 @@ if __name__ == '__main__':
         sys.stdout.write(produceMapHeader(apikey, markerlist, citycenterlist, pointlist))
 
         bodytext = """
-            <div id="infobox" class="unhidden" style="top:25px; left:75px; position:absolute; background-color:white; border:2px solid black; width:50%%; opacity:0.8">
+            <div id="infobox" class="unhidden" style="top:25px; left:75px; position:absolute; background-color:white; border:2px solid black; width:50%%; opacity:0.8; padding:10px;">
                 <div id="closebutton" style="top:2px; right:2px; position:absolute">
                     <a href="javascript:hide('infobox');"><img src="xbox.png" border=0 alt="X" title="We'll leave the light on for you."></a>
                 </div>
@@ -383,7 +383,7 @@ if __name__ == '__main__':
                 <p style="font-size:xx-small;">%s</p>
             </div>
 
-            <div id="faqbox" class="hidden" style="top:45px; left:95px; position:absolute; background-color:white; border:2px solid black; width:75%%">
+            <div id="faqbox" class="hidden" style="top:45px; left:95px; position:absolute; background-color:white; border:2px solid black; width:75%%; padding:10px;">
                 <div id="closebutton" style="top:2px; right:2px; position:absolute">
                     <a href="javascript:hide('faqbox');"><img src="xbox.png" border=0 alt="X" title="OK, OK, I'll show you the map."></a>
                 </div>
@@ -400,11 +400,11 @@ if __name__ == '__main__':
                 <p>This is revision %s (%s).</p>
             </div>
 
-            <div id="chartbox" class="hidden" style="top:45px; left:95px; position:absolute; background-color:white; border:2px solid black; width:505px">
+            <div id="chartbox" class="hidden" style="top:45px; left:95px; position:absolute; background-color:white; border:2px solid black; padding:10px;">
                 <div id="closebutton" style="top:2px; right:2px; position:absolute">
-                    <a href="javascript:hide('chartbox');"><img src="xbox.png" border=0 alt="X" title="That was then; this is now."></a>
+                    <a href="javascript:hide('chartbox');"><img src="xbox.png" border=0 alt="X" title="Hide graph window"></a>
                 </div>
-                <img src="outagechart.png" title="Graph may be out of date by many hours.">
+                <div id="graphimage" style="background:url(outagechart.png); width:495px; height:271px;"></div>
             </div>
 
         """ % (lastupdated, len(markerlist), s, '; '.join(localelist), git_version, git_modtime)
