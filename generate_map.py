@@ -238,8 +238,6 @@ def produceMapHeader(apikey, markers, centers, points):
     distance = distance_on_unit_sphere(minLat, minLng, maxLat, maxLng) * 3960
     if distance < 5:
         zoom = 15
-    elif distance < 7:
-        zoom = 14
     elif distance < 11:
         zoom = 13
     elif distance < 13:
