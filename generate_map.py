@@ -310,18 +310,18 @@ def produceMarker(lat, long, text, firstreport=-1):
     if firstreport > 0:
         age = time.time()-firstreport
         nicetime = time.asctime(time.localtime(firstreport))
-        if age < 10*60:
+        if age < 15*60:
             color = 'purple'
-        elif age < 20*60:
-            color = 'blue'
-        elif age < 30*60:
+        elif age < 25*60:
             color = 'green'
-        elif age < 40*60:
+        elif age < 35*60:
             color = 'yellow'
-        elif age < 50*60:
+        elif age < 45*60:
             color = 'orange'
-        else:
+        elif age < 115*60:
             color = 'red'
+        else:
+            color = 'black'
         return 'batch.push(new createMarker(new GLatLng(%f, %f), "%s<br>First reported: %s", "%s"));' % (lat, long, text, nicetime, color)
     else:
         return 'batch.push(new createMarker(new GLatLng(%f, %f), "%s", "grey"));' % (lat, long, text)
