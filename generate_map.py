@@ -372,7 +372,6 @@ if __name__ == '__main__':
 
         citycenter = geocode(db, cleanname, '')
         citycenterlist.append(produceMarker(citycenter['latitude'], citycenter['longitude'], citycenter['formattedaddress']))
-        pointlist.append(citycenter)
 
         for j in fd.readlines():
             try:
