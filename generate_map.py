@@ -238,7 +238,7 @@ def produceMapHeader(apikey, markers, centers, points):
     distance = distance_on_unit_sphere(minLat, minLng, maxLat, maxLng) * 3960
     if distance < 5:
         zoom = 15
-    elif distance < 11:
+    elif distance < 8:
         zoom = 13
     elif distance < 13:
         zoom = 12
@@ -308,16 +308,20 @@ def produceMarker(lat, long, text, firstreport=-1):
     if firstreport > 0:
         age = time.time()-firstreport
         nicetime = time.asctime(time.localtime(firstreport))
+        # colors available:
+        # black, brown, green, purple, yellow, grey, orange, white
         if age < 15*60:
-            color = 'purple'
+            color = 'white'
         elif age < 25*60:
             color = 'green'
         elif age < 35*60:
             color = 'yellow'
         elif age < 45*60:
+            color = 'purple'
+        elif age < 65*60:
             color = 'orange'
         elif age < 115*60:
-            color = 'red'
+            color = 'brown'
         else:
             color = 'black'
         return 'batch.push(new createMarker(new GLatLng(%f, %f), "%s<br>First reported: %s", "%s"));' % (lat, long, text, nicetime, color)
