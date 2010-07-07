@@ -331,7 +331,7 @@ if __name__ == '__main__':
 
     stoplist = ['HONEOYE%20FL', 'HONEOYE', 'N%20CHILI']
 
-    git_version = open('.git/refs/heads/master','r').readline()
+    git_version = open('.git/refs/heads/master','r').read()
     git_modtime = time.asctime(time.localtime(os.stat('.git/refs/heads/master').st_mtime))
 
     for i in sys.argv[1:]:
@@ -397,7 +397,7 @@ if __name__ == '__main__':
                 </ul>
                 <p>Also, be sure to check out RG&E's <a href="http://rge.com/Outages/">Outage Central</a> for official information, to report outages, or to check on the status of an outage.</p>
 
-                <p>This is revision %s (%s).</p>
+                <p><a href="http://github.com/rtucker/rgeoutages/commit/%s">Software last modified %s</a>.</p>
             </div>
 
             <div id="chartbox" class="hidden" style="top:45px; left:95px; position:absolute; background-color:white; border:2px solid black; padding:10px;">
