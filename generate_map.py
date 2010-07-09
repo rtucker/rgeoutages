@@ -154,7 +154,7 @@ def produceMapHeader(apikey, markers, centers, points):
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <meta http-equiv="refresh" content="600"/>
-    <title>Current Power Outage Map for Rochester, New York</title>
+    <title>(%i) Rochester, New York Power Outage Map</title>
 <style type="text/css">
     v\:* {behavior:url(#default#VML);}  html, body {width: 100%%; height: 100%%}  body {margin-top: 0px; margin-right: 0px; margin-left: 0px; margin-bottom: 0px}
 
@@ -213,7 +213,7 @@ def produceMapHeader(apikey, markers, centers, points):
         return marker;
     }
 
-""" % apikey
+""" % (len(markers), apikey)
 
     # Determine center of map:
     # Initialize variables
@@ -414,8 +414,9 @@ if __name__ == '__main__':
                 <div id="closebutton" style="top:2px; right:2px; position:absolute">
                     <a href="javascript:hide('infobox');"><img src="xbox.png" border=0 alt="X" title="We'll leave the light on for you."></a>
                 </div>
-                <p><b>Map of Rochester-area Power Outages</b> as of %s (%i street%s).  See <a href="javascript:unhide('faqbox');">more information about this map</a>, or
-                      <a href="javascript:unhide('chartbox');">view a graph</a> of recent power outage totals.</p>
+                <p><b>Rochester-area Power Outage Map</b> as of %s (%i street%s)</b></p>
+                <p style="font-size:small;"><a href="javascript:unhide('faqbox');">More information about this map</a> | 
+                      <a href="javascript:unhide('chartbox');">Outage graph</a></p>
                 <p style="font-size:xx-small;">%s</p>
             </div>
 
@@ -430,10 +431,11 @@ if __name__ == '__main__':
                 <ul>
                     <li><b>RG&E only publishes a list of street names.</b> This map's pointer will end up in the geographic center of the street, which will undoubtedly be wrong for really long streets.  Look for clusters of outages.</li>
                     <li><b>This map doesn't indicate the actual quantity of power outages or people without power.</b> There may be just one house without power on a street, or every house on a street.  There may be multiple unrelated outages on one street, too.  There's no way to know.</li>
+                    <li><b>This page may be out of date.</b> This page does not get regenerated if there are no outages.  (Pure laziness on my part.)  If in doubt, check the as-of time.</li>
                 </ul>
                 <p>Also, be sure to check out RG&E's <a href="http://rge.com/Outages/">Outage Central</a> for official information, to report outages, or to check on the status of an outage.</p>
 
-                <p><a href="http://github.com/rtucker/rgeoutages/commit/%s">Software last modified %s</a>.</p>
+                <p style="font-size:xx-small;"><a href="http://github.com/rtucker/rgeoutages/commit/%s">Software last modified %s</a>.</p>
             </div>
 
             <div id="chartbox" class="hidden" style="top:45px; left:95px; position:absolute; background-color:white; border:2px solid black; padding:10px;">
