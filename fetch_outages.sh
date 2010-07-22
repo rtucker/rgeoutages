@@ -51,5 +51,5 @@ fi
 rm $TEMPFILE
 
 # Fetch a munin chart
-wget -q -O outagechart.png http://hennepin.hoopycat.com/munin/hoopycat.com/framboise-rgeoutages-day.png
+wget -q -O outagechart.png http://hennepin.hoopycat.com/munin/hoopycat.com/framboise/rgeoutages-day.png
 
