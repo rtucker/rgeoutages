@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# vim: set fileencoding=utf-8 :
 
 import math
 import os
@@ -147,7 +148,7 @@ def distance_on_unit_sphere(lat1, long1, lat2, long2):
 def produceMapHeader(apikey, markers, centers, points):
     """Produces a map header given an API key and a list of produceMarkers"""
 
-    out = """
+    out = u"""
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml">
@@ -250,7 +251,7 @@ def produceMapHeader(apikey, markers, centers, points):
         zoom = 9
 
     if len(markers) > 300:
-        out += """
+        out += u"""
             function setupMarkers() {
                 var batch = [];
                 %s
@@ -263,7 +264,7 @@ def produceMapHeader(apikey, markers, centers, points):
         """ % ('\n'.join(markers), '\n'.join(centers))
         zoom = min(zoom, 11)
     else:
-        out += """
+        out += u"""
             function setupMarkers() {
                 var batch = [];
                 %s
@@ -272,13 +273,13 @@ def produceMapHeader(apikey, markers, centers, points):
             }
         """ % '\n'.join(markers)
 
-    out += """
+    out += u"""
     /* distance: %.2f
        minimum corner: %.4f, %.4f
        maximum corner: %.4f, %.4f */
     """ % (distance, minLat, minLng, maxLat, maxLng)
 
-    out += """
+    out += u"""
     function initialize() {
         if (GBrowserIsCompatible()) {
             map = new GMap2(document.getElementById("map_canvas"));
@@ -296,7 +297,7 @@ def produceMapHeader(apikey, markers, centers, points):
         }
     } """ % (centerLat, centerLng, zoom)
 
-    out += """
+    out += u"""
         </script>
         </head>
     """
@@ -329,7 +330,7 @@ def produceMarker(lat, long, text, firstreport=-1):
         return 'batch.push(new createMarker(new GLatLng(%f, %f), "%s", "grey"));' % (lat, long, text)
 
 def produceMapBody(body):
-    return """  <body onload="initialize()" onunload="GUnload()">
+    return u"""  <body onload="initialize()" onunload="GUnload()">
     <div id="map_canvas" style="width: 100%%; height: 100%%;"></div>
     %s
   </body>
@@ -407,9 +408,9 @@ if __name__ == '__main__':
             s = 's'
         else:
             s = ''
-        sys.stdout.write(produceMapHeader(apikey, markerlist, citycenterlist, pointlist))
+        sys.stdout.write(produceMapHeader(apikey, markerlist, citycenterlist, pointlist).encode("utf-8"))
 
-        bodytext = """
+        bodytext = u"""
             <div id="infobox" class="unhidden" style="top:25px; left:75px; position:absolute; background-color:white; border:2px solid black; width:50%%; opacity:0.8; padding:10px;">
                 <div id="closebutton" style="top:2px; right:2px; position:absolute">
                     <a href="javascript:hide('infobox');"><img src="xbox.png" border=0 alt="X" title="We'll leave the light on for you."></a>
