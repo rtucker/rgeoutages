@@ -425,9 +425,7 @@ if __name__ == '__main__':
                 <div id="closebutton" style="top:2px; right:2px; position:absolute">
                     <a href="javascript:hide('faqbox');"><img src="xbox.png" border=0 alt="X" title="OK, OK, I'll show you the map."></a>
                 </div>
-                <p><b>IF YOU HAVE A LIFE-THREATENING ELECTRICAL EMERGENCY, CALL RG&E AT 1-800-743-1701 OR CALL 911 IMMEDIATELY.  DO NOT TOUCH DOWNED ELECTRICAL LINES, EVER.  EVEN IF YOUR STREET IS LISTED HERE.</b></p>
-                <hr>
-                <p>The source data for this map is published by <A HREF="http://ebiz1.rge.com/cusweb/outage/index.aspx">RG&E</A>, but all map-related blame should go to <a href="http://hoopycat.com/~rtucker/">Ryan Tucker</a> &lt;<a href="mailto:rtucker@gmail.com">rtucker@gmail.com</a>&gt;.  You can find the source code <a href="http://github.com/rtucker/rgeoutages/">on GitHub</a>.</p>
+                <p>This map plots the approximate locations of power outages in Rochester, New York, and is updated every ten minutes.  The source data for this map is published by <A HREF="http://ebiz1.rge.com/cusweb/outage/index.aspx">RG&E</A>, but all map-related blame should go to <a href="http://hoopycat.com/~rtucker/">Ryan Tucker</a> &lt;<a href="mailto:rtucker@gmail.com">rtucker@gmail.com</a>&gt;.  You can find the source code <a href="https://github.com/rtucker/rgeoutages/">on GitHub</a>.</p>
                 <p>Some important tips to keep in mind...</p>
                 <ul>
                     <li><b>RG&E only publishes a list of street names.</b> This map's pointer will end up in the geographic center of the street, which will undoubtedly be wrong for really long streets.  Look for clusters of outages.</li>
@@ -435,8 +433,9 @@ if __name__ == '__main__':
                     <li><b>This page may be out of date.</b> This page does not get regenerated if there are no outages.  (Pure laziness on my part.)  If in doubt, check the as-of time.</li>
                 </ul>
                 <p>Also, be sure to check out RG&E's <a href="http://rge.com/Outages/">Outage Central</a> for official information, to report outages, or to check on the status of an outage.</p>
-
-                <p style="font-size:xx-small;"><a href="http://github.com/rtucker/rgeoutages/commit/%s">Software last modified %s</a>.</p>
+                <hr>
+                <p><b>IF YOU HAVE A LIFE-THREATENING ELECTRICAL EMERGENCY, CALL RG&E AT 1-800-743-1701 OR CALL 911 IMMEDIATELY.  DO NOT TOUCH DOWNED ELECTRICAL LINES, EVER.  EVEN IF YOUR STREET IS LISTED HERE.</b></p>
+                <p style="font-size:xx-small;"><a href="https://github.com/rtucker/rgeoutages/commit/%s">Software last modified %s</a>.</p>
             </div>
 
             <div id="chartbox" class="hidden" style="top:45px; left:95px; position:absolute; background-color:white; border:2px solid black; padding:10px;">
@@ -449,4 +448,3 @@ if __name__ == '__main__':
         """ % (lastupdated, len(markerlist), s, '; '.join(localelist), git_version, git_modtime)
 
         sys.stdout.write(produceMapBody(bodytext))
- 
