@@ -20,6 +20,8 @@ except:
     sys.stderr.write("You need to create a secrets.py file with a Google Maps API key.")
     sys.exit(1)
 
+import scrape_rge
+
 def initDB(filename="rgeoutages.sqlite3"):
     """Connect to and initialize the cache database.
 
@@ -304,11 +306,13 @@ def produceMapHeader(apikey, markers, centers, points):
 
     return out
 
-def produceMarker(lat, long, text, firstreport=-1):
+def produceMarker(lat, long, text, firstreport=-1, streetinfo={}):
     """Produces a google maps marker given a latitude, longitude, text, and first report time"""
+    color = 'grey'
     if firstreport > 0:
         age = time.time()-firstreport
         nicetime = time.asctime(time.localtime(firstreport))
+        streetinfo['First Reported'] = nicetime
         # colors available:
         # black, brown, green, purple, yellow, grey, orange, white
         if age < 15*60:
@@ -325,9 +329,9 @@ def produceMarker(lat, long, text, firstreport=-1):
             color = 'brown'
         else:
             color = 'black'
-        return 'batch.push(new createMarker(new GLatLng(%f, %f), "%s<br>First reported: %s", "%s"));' % (lat, long, text, nicetime, color)
-    else:
-        return 'batch.push(new createMarker(new GLatLng(%f, %f), "%s", "grey"));' % (lat, long, text)
+
+    text = '<strong>' + text + '</strong><br />' + '<br />'.join('%s: %s' % (key, value) for key, value in streetinfo.items())
+    return 'batch.push(new createMarker(new GLatLng(%f, %f), "%s", "%s"));' % (lat, long, text, color)
 
 def produceMapBody(body):
     return u"""  <body onload="initialize()" onunload="GUnload()">
@@ -363,39 +367,37 @@ if __name__ == '__main__':
         historydict = {}
     newhistorydict = {}
 
-    for i in sys.argv[1:]:
-        if i in stoplist:
-            continue
+    # fetch the outages
+    outagedata = scrape_rge.crawl_outages()
 
-        fd = open('outages_%s.txt' % i)
-        lastupdated = fd.readline()
-        cleanname = i.replace('%20', ' ')
+    for county, countydata in outagedata.items():
+        towns = countydata['Towns']
+        for town, towndata in towns.items():
+            streets = towndata['Streets']
+            count = 0
+            citycenter = geocode(db, town, '')
+            citycenterlist.append(produceMarker(citycenter['latitude'], citycenter['longitude'], citycenter['formattedaddress']))
 
-        count = 0
+            for street, streetdata in streets.items():
+                try:
+                    streetinfo = geocode(db, town, street)
+                    if streetinfo['formattedaddress'] in historydict.keys():
+                        firstreport = historydict[streetinfo['formattedaddress']]
+                    else:
+                        firstreport = time.time()
+                    markerlist.append(produceMarker(streetinfo['latitude'], streetinfo['longitude'], streetinfo['formattedaddress'], firstreport, streetdata))
+                    pointlist.append(streetinfo)
+                    newhistorydict[streetinfo['formattedaddress']] = firstreport
+                    count += 1
+                except Exception, e:
+                    sys.stdout.write("<!-- Geocode fail: %s in %s gave %s -->\n" % (street, town, e.__str__()))
 
-        citycenter = geocode(db, cleanname, '')
-        citycenterlist.append(produceMarker(citycenter['latitude'], citycenter['longitude'], citycenter['formattedaddress']))
+            if count > 1:
+                s = 's'
+            else:
+                s = ''
 
-        for j in fd.readlines():
-            try:
-                streetinfo = geocode(db, cleanname, j)
-                if streetinfo['formattedaddress'] in historydict.keys():
-                    firstreport = historydict[streetinfo['formattedaddress']]
-                else:
-                    firstreport = time.time()
-                markerlist.append(produceMarker(streetinfo['latitude'], streetinfo['longitude'], streetinfo['formattedaddress'], firstreport))
-                pointlist.append(streetinfo)
-                newhistorydict[streetinfo['formattedaddress']] = firstreport
-                count += 1
-            except Exception, e:
-                sys.stdout.write("<!-- Geocode fail: %s in %s gave %s -->\n" % (j, cleanname, e.__str__()))
-
-        if count > 1:
-            s = 's'
-        else:
-            s = ''
-
-        localelist.append('<a href="http://ebiz1.rge.com/cusweb/outage/roadOutages.aspx?town=%s">%s</a>:&nbsp;%i&nbsp;street%s' % (i, cleanname, count, s))
+            localelist.append('%s:&nbsp;%i&nbsp;street%s' % (town, count, s))
 
     newhistoryfd = open('history.json','w')
     json.dump(newhistorydict, newhistoryfd)
@@ -445,6 +447,6 @@ if __name__ == '__main__':
                 <div id="graphimage" style="background:url(outagechart.png); width:495px; height:271px;"></div>
             </div>
 
-        """ % (lastupdated, len(markerlist), s, '; '.join(localelist), git_version, git_modtime)
+        """ % ('N/A', len(markerlist), s, '; '.join(localelist), git_version, git_modtime)
 
         sys.stdout.write(produceMapBody(bodytext))
