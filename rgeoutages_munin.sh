@@ -20,7 +20,7 @@ elif [ "$1" = "autoconf" ]; then
     fi
 
 else
-    outagecount=`cat $BASEDIR/outages_*.txt | wc -l`
+    outagecount=`json_xs < $BASEDIR/history.json | grep -c "  "`
     echo "outages.value $outagecount"
 fi
 
