@@ -10,8 +10,8 @@ export TZ=America/New_York
 [ -x "$GENERATOR" ] || (echo "Generator script not executable: $GENERATOR"; exit 1)
 
 # All together now
+cd $BASEDIR
 TEMPFILE=`tempfile`
-
 $GENERATOR > $TEMPFILE
 
 if [ -n "`cat $TEMPFILE`" ]; then
@@ -21,4 +21,3 @@ else
 fi
 
 rm $TEMPFILE
-
