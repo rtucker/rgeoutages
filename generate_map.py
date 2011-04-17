@@ -312,7 +312,7 @@ def produceMarker(lat, long, text, firstreport=-1, streetinfo={}):
     if firstreport > 0:
         age = time.time()-firstreport
         nicetime = time.asctime(time.localtime(firstreport))
-        streetinfo['First Reported'] = nicetime
+        streetinfo['FirstReported'] = nicetime
         # colors available:
         # black, brown, green, purple, yellow, grey, orange, white
         if age < 15*60:
@@ -397,7 +397,11 @@ if __name__ == '__main__':
             else:
                 s = ''
 
-            localelist.append('%s:&nbsp;%i&nbsp;street%s' % (town, count, s))
+            localestring = '<strong>%s</strong>:&nbsp;%i&nbsp;street%s' % (town, count, s)
+            for key, value in towndata.items():
+                if type(value) is not dict:
+                    localestring += ',&nbsp;%s:&nbsp;%s' % (key, value)
+            localelist.append(localestring)
 
     newhistoryfd = open('history.json','w')
     json.dump(newhistorydict, newhistoryfd)
@@ -444,9 +448,9 @@ if __name__ == '__main__':
                 <div id="closebutton" style="top:2px; right:2px; position:absolute">
                     <a href="javascript:hide('chartbox');"><img src="xbox.png" border=0 alt="X" title="Hide graph window"></a>
                 </div>
-                <div id="graphimage" style="background:url(outagechart.png); width:495px; height:271px;"></div>
+                <div id="graphimage" style="background:url(http://munin.sodtech.net/hoopycat.com/framboise/rgeoutages-day.png); width:495px; height:271px;"></div>
             </div>
 
-        """ % ('N/A', len(markerlist), s, '; '.join(localelist), git_version, git_modtime)
+        """ % (time.asctime(), len(markerlist), s, '; '.join(localelist), git_version, git_modtime)
 
         sys.stdout.write(produceMapBody(bodytext))
