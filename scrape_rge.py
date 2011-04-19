@@ -68,6 +68,10 @@ def crawl_outages(base_url=BASE_URL, start_url=START_URL):
 
     # From here, we need to get a bunch of towns...
     for countyfile, countyrow in countydata.items():
+        if countyfile.startswith('http'):
+            # It isn't our normal relative URL; ignore it
+            continue
+
         townsoup = get_soup(base_url + countyfile)
         townheadings, towndata = scrape_table(townsoup.table)
 
