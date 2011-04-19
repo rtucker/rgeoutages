@@ -20,7 +20,7 @@ elif [ "$1" = "autoconf" ]; then
     fi
 
 else
-    outagecount=`json_xs < $BASEDIR/history.json | grep -c "  "`
+    outagecount=`/usr/local/bin/json_xs < $BASEDIR/history.json | grep -c "  "`
     echo "outages.value $outagecount"
 fi
 
