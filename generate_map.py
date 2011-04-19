@@ -366,32 +366,39 @@ if __name__ == '__main__':
     except IOError:
         historydict = {}
     newhistorydict = {}
+    newjsondict = {}
 
     # fetch the outages
     outagedata = scrape_rge.crawl_outages()
 
     for county, countydata in outagedata.items():
+        newjsondict[county] = {}
         towns = countydata['Towns']
         for town, towndata in towns.items():
+            newjsondict[county][town] = {}
             streets = towndata['Streets']
             count = 0
             citycenter = geocode(db, town, '')
             citycenterlist.append(produceMarker(citycenter['latitude'], citycenter['longitude'], citycenter['formattedaddress']))
 
             for street, streetdata in streets.items():
+                newjsondict[county][town][street] = {}
+                for key, value in streetdata.items():
+                    newjsondict[county][town][street][key] = value
                 try:
                     streetinfo = geocode(db, town, street)
                     if streetinfo['formattedaddress'] in historydict.keys():
                         firstreport = historydict[streetinfo['formattedaddress']]
                     else:
                         firstreport = time.time()
+                    newjsondict[county][town][street]['geo'] = streetinfo
+                    newjsondict[county][town][street]['firstreport'] = firstreport
                     markerlist.append(produceMarker(streetinfo['latitude'], streetinfo['longitude'], streetinfo['formattedaddress'], firstreport, streetdata))
                     pointlist.append(streetinfo)
                     newhistorydict[streetinfo['formattedaddress']] = firstreport
                     count += 1
                 except Exception, e:
                     sys.stdout.write("<!-- Geocode fail: %s in %s gave %s -->\n" % (street, town, e.__str__()))
-
             if count > 1:
                 s = 's'
             else:
@@ -403,54 +410,61 @@ if __name__ == '__main__':
                     localestring += ',&nbsp;%s:&nbsp;%s' % (key, value)
             localelist.append(localestring)
 
+    # Save json history file
     newhistoryfd = open('history.json','w')
     json.dump(newhistorydict, newhistoryfd)
     newhistoryfd.close()
 
-    if len(markerlist) > 0:
-        if len(markerlist) > 300:
-            s = 's -- zoom for more detail'
-        elif len(markerlist) > 1:
-            s = 's'
-        else:
-            s = ''
-        sys.stdout.write(produceMapHeader(apikey, markerlist, citycenterlist, pointlist).encode("utf-8"))
+    # Save json dump file
+    newjsonfd = open('data.new.json','w')
+    json.dump(newjsondict, newjsonfd)
+    newjsonfd.close()
+    os.rename('data.new.json', 'data.json')
 
-        bodytext = u"""
-            <div id="infobox" class="unhidden" style="top:25px; left:75px; position:absolute; background-color:white; border:2px solid black; width:50%%; opacity:0.8; padding:10px;">
-                <div id="closebutton" style="top:2px; right:2px; position:absolute">
-                    <a href="javascript:hide('infobox');"><img src="xbox.png" border=0 alt="X" title="We'll leave the light on for you."></a>
-                </div>
-                <p><b>Rochester-area Power Outage Map</b> as of %s (%i street%s)</b></p>
-                <p style="font-size:small;"><a href="javascript:unhide('faqbox');">More information about this map</a> | 
-                      <a href="javascript:unhide('chartbox');">Outage graph</a></p>
-                <p style="font-size:xx-small;">%s</p>
+    if len(markerlist) > 300:
+        s = 's -- zoom for more detail'
+    elif len(markerlist) == 1:
+        s = ''
+    else:
+        s = 's'
+    sys.stdout.write(produceMapHeader(apikey, markerlist, citycenterlist, pointlist).encode("utf-8"))
+
+    bodytext = u"""
+        <div id="infobox" class="unhidden" style="top:25px; left:75px; position:absolute; background-color:white; border:2px solid black; width:50%%; opacity:0.8; padding:10px;">
+            <div id="closebutton" style="top:2px; right:2px; position:absolute">
+                <a href="javascript:hide('infobox');"><img src="xbox.png" border=0 alt="X" title="We'll leave the light on for you."></a>
             </div>
+            <p><b>Rochester-area Power Outage Map</b> as of %s (%i outage%s)</b></p>
+            <p style="font-size:small;"><a href="javascript:unhide('faqbox');">More information about this map</a> | 
+                  <a href="javascript:unhide('chartbox');">Outage graph</a> |
+                  <a href="data.json">JSON</a></p>
+            <p style="font-size:xx-small;">%s</p>
+        </div>
 
-            <div id="faqbox" class="hidden" style="top:45px; left:95px; position:absolute; background-color:white; border:2px solid black; width:75%%; padding:10px;">
-                <div id="closebutton" style="top:2px; right:2px; position:absolute">
-                    <a href="javascript:hide('faqbox');"><img src="xbox.png" border=0 alt="X" title="OK, OK, I'll show you the map."></a>
-                </div>
-                <p>This map plots the approximate locations of power outages in Rochester, New York, and is updated every ten minutes.  The source data for this map is published by <A HREF="http://ebiz1.rge.com/cusweb/outage/index.aspx">RG&E</A>, but all map-related blame should go to <a href="http://hoopycat.com/~rtucker/">Ryan Tucker</a> &lt;<a href="mailto:rtucker@gmail.com">rtucker@gmail.com</a>&gt;.  You can find the source code <a href="https://github.com/rtucker/rgeoutages/">on GitHub</a>.</p>
-                <p>Some important tips to keep in mind...</p>
-                <ul>
-                    <li><b>RG&E only publishes a list of street names.</b> This map's pointer will end up in the geographic center of the street, which will undoubtedly be wrong for really long streets.  Look for clusters of outages.</li>
-                    <li><b>This map doesn't indicate the actual quantity of power outages or people without power.</b> There may be just one house without power on a street, or every house on a street.  There may be multiple unrelated outages on one street, too.  There's no way to know.</li>
-                    <li><b>This page may be out of date.</b> This page does not get regenerated if there are no outages.  (Pure laziness on my part.)  If in doubt, check the as-of time.</li>
-                </ul>
-                <p>Also, be sure to check out RG&E's <a href="http://rge.com/Outages/">Outage Central</a> for official information, to report outages, or to check on the status of an outage.</p>
-                <hr>
-                <p><b>IF YOU HAVE A LIFE-THREATENING ELECTRICAL EMERGENCY, CALL RG&E AT 1-800-743-1701 OR CALL 911 IMMEDIATELY.  DO NOT TOUCH DOWNED ELECTRICAL LINES, EVER.  EVEN IF YOUR STREET IS LISTED HERE.</b></p>
-                <p style="font-size:xx-small;"><a href="https://github.com/rtucker/rgeoutages/commit/%s">Software last modified %s</a>.</p>
+        <div id="faqbox" class="hidden" style="top:45px; left:95px; position:absolute; background-color:white; border:2px solid black; width:75%%; padding:10px;">
+            <div id="closebutton" style="top:2px; right:2px; position:absolute">
+                <a href="javascript:hide('faqbox');"><img src="xbox.png" border=0 alt="X" title="OK, OK, I'll show you the map."></a>
             </div>
+            <p>This map plots the approximate locations of power outages in Rochester, New York, and is updated every ten minutes.  The source data for this map is published by <A HREF="http://www.rge.com/Outages/outageinformation.html">RG&E</A>, but all map-related blame should go to <a href="http://hoopycat.com/~rtucker/">Ryan Tucker</a> &lt;<a href="mailto:rtucker@gmail.com">rtucker@gmail.com</a>&gt;.  You can find the source code <a href="https://github.com/rtucker/rgeoutages/">on GitHub</a>.</p>
+            <p>Some important tips to keep in mind...</p>
+            <ul>
+                <li><b>RG&E only publishes a list of street names.</b> This map's pointer will end up in the geographic center of the street, which will undoubtedly be wrong for really long streets.  Look for clusters of outages.</li>
+                <li><b>This map doesn't indicate the actual quantity of power outages or people without power.</b> There may be just one house without power on a street, or every house on a street.  There may be multiple unrelated outages on one street, too.  There's no way to know.</li>
+                <li><b>This page may be out of date.</b> This page does not get regenerated if there are no outages.  (Pure laziness on my part.)  If in doubt, check the as-of time.</li>
+            </ul>
+            <p>Also, be sure to check out RG&E's <a href="http://rge.com/Outages/">Outage Central</a> for official information, to report outages, or to check on the status of an outage.</p>
+            <hr>
+            <p><b>IF YOU HAVE A LIFE-THREATENING ELECTRICAL EMERGENCY, CALL RG&E AT 1-800-743-1701 OR CALL 911 IMMEDIATELY.  DO NOT TOUCH DOWNED ELECTRICAL LINES, EVER.  EVEN IF YOUR STREET IS LISTED HERE.</b></p>
+            <p style="font-size:xx-small;"><a href="https://github.com/rtucker/rgeoutages/commit/%s">Software last modified %s</a>.</p>
+        </div>
 
-            <div id="chartbox" class="hidden" style="top:45px; left:95px; position:absolute; background-color:white; border:2px solid black; padding:10px;">
-                <div id="closebutton" style="top:2px; right:2px; position:absolute">
-                    <a href="javascript:hide('chartbox');"><img src="xbox.png" border=0 alt="X" title="Hide graph window"></a>
-                </div>
-                <div id="graphimage" style="background:url(http://munin.sodtech.net/hoopycat.com/framboise/rgeoutages-day.png); width:495px; height:271px;"></div>
+        <div id="chartbox" class="hidden" style="top:45px; left:95px; position:absolute; background-color:white; border:2px solid black; padding:10px;">
+            <div id="closebutton" style="top:2px; right:2px; position:absolute">
+                <a href="javascript:hide('chartbox');"><img src="xbox.png" border=0 alt="X" title="Hide graph window"></a>
             </div>
+            <div id="graphimage" style="background:url(http://munin.sodtech.net/hoopycat.com/framboise/rgeoutages-day.png); width:495px; height:271px;"></div>
+        </div>
 
-        """ % (time.asctime(), len(markerlist), s, '; '.join(localelist), git_version, git_modtime)
+    """ % (time.asctime(), len(markerlist), s, '; '.join(localelist), git_version, git_modtime)
 
-        sys.stdout.write(produceMapBody(bodytext))
+    sys.stdout.write(produceMapBody(bodytext))

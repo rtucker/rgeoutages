@@ -4,4 +4,4 @@ secrets.py
 *.pyc
 *.sqlite3
 outagechart.png
-history.json
+*.json
