@@ -22,7 +22,7 @@ elif [ "$1" = "autoconf" ]; then
     fi
 
 else
-    customercount=`json_xs -t yaml < $BASEDIR/data.json | grep CustomersWithoutPower | awk '{ sum += $2 }; END { print sum }'`
+    customercount=`/usr/local/bin/json_xs -t yaml < $BASEDIR/data.json | grep CustomersWithoutPower | awk '{ sum += $2 }; END { print sum }'`
     outagecount=`/usr/local/bin/json_xs < $BASEDIR/history.json | grep -c "  "`
     echo "customers.value $customercount"
     echo "outages.value $outagecount"
