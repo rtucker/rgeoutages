@@ -8,8 +8,10 @@ graph_title RG&E Power Outage Summary
 graph_args --base 1000 -l 0
 graph_vlabel outages
 graph_category Climate
-outages.draw AREA
-outages.label outages
+customers.draw AREA
+customers.label customers without power
+outages.draw LINE
+outages.label streets affected
 EOM
 
 elif [ "$1" = "autoconf" ]; then
@@ -20,7 +22,9 @@ elif [ "$1" = "autoconf" ]; then
     fi
 
 else
+    customercount=`json_xs -t yaml < $BASEDIR/data.json | grep CustomersWithoutPower | awk '{ sum += $2 }; END { print sum }'`
     outagecount=`/usr/local/bin/json_xs < $BASEDIR/history.json | grep -c "  "`
+    echo "customers.value $customercount"
     echo "outages.value $outagecount"
 fi
 
