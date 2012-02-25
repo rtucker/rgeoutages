@@ -84,7 +84,10 @@ def geocode(db, town, location, street):
     """
 
     town = town.lower().strip()
-    location = location.lower().strip()
+    if location:
+        location = location.lower().strip()
+    else:
+        location = town
     street = street.lower().strip()
 
     if street.endswith(' la'):
@@ -382,9 +385,6 @@ if __name__ == '__main__':
             newjsondict[county][town] = {}
             locations = towndata['Locations']
             count = 0
-            citycenter = geocode(db, town, '', '')
-            citycenterlist.append(produceMarker(citycenter['latitude'], citycenter['longitude'], citycenter['formattedaddress']))
-
             for location, locationdata in locations.items():
                 streets = locationdata['Streets']
                 newjsondict[county][town][location] = {}
@@ -413,6 +413,9 @@ if __name__ == '__main__':
                 s = 's'
             else:
                 s = ''
+
+            citycenter = geocode(db, town, '', '')
+            citycenterlist.append(produceMarker(citycenter['latitude'], citycenter['longitude'], citycenter['formattedaddress'] + ' (%i street%s)' % (count, s)))
 
             localestring = '<strong>%s</strong>:&nbsp;%i&nbsp;street%s' % (town, count, s)
             for key, value in towndata.items():
