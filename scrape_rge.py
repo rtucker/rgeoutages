@@ -32,6 +32,9 @@ def get_url(url):
     b.seek(0)
     return b
 
+def clean_int(num):
+    return int(num.replace(',', ''))
+
 def scrape_table(table):
     data = {}
     headings = []
@@ -66,43 +69,62 @@ def crawl_outages(base_url=BASE_URL, start_url=START_URL):
     countysoup = get_soup(base_url + start_url)
     countyheadings, countydata = scrape_table(countysoup.table)
 
-    # From here, we need to get a bunch of towns...
+    # From here, we need to get a bunch of townships...
     for countyfile, countyrow in countydata.items():
         if countyfile.startswith('http'):
             # It isn't our normal relative URL; ignore it
             continue
+        countydict = {}
 
         townsoup = get_soup(base_url + countyfile)
         townheadings, towndata = scrape_table(townsoup.table)
 
-        # And then a bunch of streets...
-        countydict = {}
+        # And then a bunch of locations...
         for townfile, townrow in towndata.items():
             if str(townfile) == str(start_url):
                 continue
             towndict = {}
-            streetsoup = get_soup(base_url + townfile)
-            streetheadings, streetdata = scrape_table(streetsoup.table)
-            for streetname, streetrow in streetdata.items():
-                if str(streetname) == str(countyfile):
+
+            locationsoup = get_soup(base_url + townfile)
+            locationheadings, locationdata = scrape_table(locationsoup.table)
+                   
+            # And then a bunch of streets...
+            for locationfile, locationrow in locationdata.items():
+                if str(locationfile) == str(start_url):
                     continue
-                if len(streetrow) == 2:
-                    streetrow.append('Unknown')
-                towndict[streetname] = {
-                    'TotalCustomers': streetrow[0],
-                    'CustomersWithoutPower': streetrow[1],
-                    'EstimatedRestoration': streetrow[2],
+                locationdict = {}
+                streetsoup = get_soup(base_url + locationfile)
+                streetheadings, streetdata = scrape_table(streetsoup.table)
+                for streetname, streetrow in streetdata.items():
+                    if str(streetname) == str(countyfile):
+                        continue
+                    if str(streetname).lower().endswith('html'): continue
+
+                    if len(streetrow) == 2:
+                        streetrow.append('Unknown')
+
+                    locationdict[streetname] = {
+                        'TotalCustomers': clean_int(streetrow[0]),
+                        'CustomersWithoutPower': clean_int(streetrow[1]),
+                        'EstimatedRestoration': streetrow[2],
+                        }
+
+                if len(locationrow) < 3: continue
+                towndict[locationrow[0]] = {
+                    'TotalCustomers': clean_int(locationrow[1]),
+                    'CustomersWithoutPower': clean_int(locationrow[2]),
+                    'Streets': locationdict,
                     }
 
             countydict[townrow[0]] = {
-                'TotalCustomers': townrow[1],
-                'CustomersWithoutPower': townrow[2],
-                'Streets': towndict,
+                'TotalCustomers': clean_int(townrow[1]),
+                'CustomersWithoutPower': clean_int(townrow[2]),
+                'Locations': towndict,
                 }
 
         outages[countyrow[0]] = {
-            'TotalCustomers': countyrow[1],
-            'CustomersWithoutPower': countyrow[2],
+            'TotalCustomers': clean_int(countyrow[1]),
+            'CustomersWithoutPower': clean_int(countyrow[2]),
             'Towns': countydict,
             }
 

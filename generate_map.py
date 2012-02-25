@@ -31,14 +31,14 @@ def initDB(filename="rgeoutages.sqlite3"):
 
     db = sqlite3.connect(filename)
     c = db.cursor()
-    c.execute('pragma table_info(geocodecache)')
+    c.execute('pragma table_info(geocodecache2)')
     columns = ' '.join(i[1] for i in c.fetchall()).split()
     if columns == []:
         # need to create table
-        c.execute("""create table geocodecache
-            (town text, streetname text, latitude real, longitude real,
-             formattedaddress text, locationtype text, lastcheck integer,
-             viewport text)""")
+        c.execute("""create table geocodecache2
+            (town text, location text, streetname text, latitude real,
+             longitude real, formattedaddress text, locationtype text,
+             lastcheck integer, viewport text)""")
         db.commit()
 
     return db
@@ -76,7 +76,7 @@ def fetchGeocode(location):
 
     return outdict
 
-def geocode(db, town, location):
+def geocode(db, town, location, street):
     """Geocodes a location, either using the cache or the Google.
 
     Returns dictionary of formattedaddress, latitude, longitude,
@@ -85,12 +85,16 @@ def geocode(db, town, location):
 
     town = town.lower().strip()
     location = location.lower().strip()
+    street = street.lower().strip()
+
+    if street.endswith(' la'):
+        street += 'ne'
 
     using_cache = False
 
     # check the db
     c = db.cursor()
-    c.execute('select latitude,longitude,formattedaddress,locationtype,viewport,lastcheck from geocodecache where town=? and streetname=? order by lastcheck desc limit 1', (town, location))
+    c.execute('select latitude,longitude,formattedaddress,locationtype,viewport,lastcheck from geocodecache2 where town=? and location=? and streetname=? order by lastcheck desc limit 1', (town, location, street))
 
     rows = c.fetchall()
     if rows:
@@ -107,11 +111,11 @@ def geocode(db, town, location):
             return outdict
 
     if not using_cache:
-        fetchresult = fetchGeocode(location + ", " + town + " NY")
+        fetchresult = fetchGeocode(street + ", " + location + " NY")
 
         viewport_json = json.dumps(fetchresult['viewport'])
 
-        c.execute('insert into geocodecache (town, streetname, latitude, longitude, formattedaddress, locationtype, lastcheck, viewport) values (?,?,?,?,?,?,?,?)', (town, location, fetchresult['latitude'], fetchresult['longitude'], fetchresult['formattedaddress'], fetchresult['locationtype'], time.time(), viewport_json))
+        c.execute('insert into geocodecache2 (town, location, streetname, latitude, longitude, formattedaddress, locationtype, lastcheck, viewport) values (?,?,?,?,?,?,?,?,?)', (town, location, street, fetchresult['latitude'], fetchresult['longitude'], fetchresult['formattedaddress'], fetchresult['locationtype'], time.time(), viewport_json))
         db.commit()
 
         return fetchresult
@@ -376,29 +380,35 @@ if __name__ == '__main__':
         towns = countydata['Towns']
         for town, towndata in towns.items():
             newjsondict[county][town] = {}
-            streets = towndata['Streets']
+            locations = towndata['Locations']
             count = 0
-            citycenter = geocode(db, town, '')
+            citycenter = geocode(db, town, '', '')
             citycenterlist.append(produceMarker(citycenter['latitude'], citycenter['longitude'], citycenter['formattedaddress']))
 
-            for street, streetdata in streets.items():
-                newjsondict[county][town][street] = {}
-                for key, value in streetdata.items():
-                    newjsondict[county][town][street][key] = value
-                try:
-                    streetinfo = geocode(db, town, street)
-                    if streetinfo['formattedaddress'] in historydict.keys():
-                        firstreport = historydict[streetinfo['formattedaddress']]
-                    else:
-                        firstreport = time.time()
-                    newjsondict[county][town][street]['geo'] = streetinfo
-                    newjsondict[county][town][street]['firstreport'] = firstreport
-                    markerlist.append(produceMarker(streetinfo['latitude'], streetinfo['longitude'], streetinfo['formattedaddress'], firstreport, streetdata))
-                    pointlist.append(streetinfo)
-                    newhistorydict[streetinfo['formattedaddress']] = firstreport
-                    count += 1
-                except Exception, e:
-                    sys.stdout.write("<!-- Geocode fail: %s in %s gave %s -->\n" % (street, town, e.__str__()))
+            for location, locationdata in locations.items():
+                streets = locationdata['Streets']
+                newjsondict[county][town][location] = {}
+                for street, streetdata in streets.items():
+                    newjsondict[county][town][location][street] = {}
+                    for key, value in streetdata.items():
+                        newjsondict[county][town][location][street][key] = value
+                    try:
+                        streetinfo = geocode(db, town, location, street)
+                        if streetinfo['formattedaddress'] in historydict.keys():
+                            firstreport = historydict[streetinfo['formattedaddress']]
+                        else:
+                            firstreport = time.time()
+                        if streetinfo['locationtype'] == 'APPROXIMATE':
+                            streetinfo['formattedaddress'] = '%s? (%s)' % (street, streetinfo['formattedaddress'])
+                        newjsondict[county][town][location][street]['geo'] = streetinfo
+                        newjsondict[county][town][location][street]['firstreport'] = firstreport
+                        markerlist.append(produceMarker(streetinfo['latitude'], streetinfo['longitude'], streetinfo['formattedaddress'], firstreport, streetdata))
+                        pointlist.append(streetinfo)
+                        newhistorydict[streetinfo['formattedaddress']] = firstreport
+                        count += 1
+                    except Exception, e:
+                        sys.stdout.write("<!-- Geocode fail: %s in %s gave %s -->\n" % (street, town, e.__str__()))
+
             if count > 1:
                 s = 's'
             else:
@@ -408,6 +418,7 @@ if __name__ == '__main__':
             for key, value in towndata.items():
                 if type(value) is not dict:
                     localestring += ',&nbsp;%s:&nbsp;%s' % (key, value)
+            localestring += '&nbsp;(%.2f%%&nbsp;affected)' % (float(towndata['CustomersWithoutPower']) / float(towndata['TotalCustomers']) * 100.0)
             localelist.append(localestring)
 
     # Save json history file
@@ -434,7 +445,7 @@ if __name__ == '__main__':
             <div id="closebutton" style="top:2px; right:2px; position:absolute">
                 <a href="javascript:hide('infobox');"><img src="xbox.png" border=0 alt="X" title="We'll leave the light on for you."></a>
             </div>
-            <p><b>Rochester-area Power Outage Map</b> as of %s (%i outage%s)</b></p>
+            <p><b>Rochester-area Power Outage Map</b> as of %s (%i street%s)</b></p>
             <p style="font-size:small;"><a href="javascript:unhide('faqbox');">More information about this map</a> | 
                   <a href="javascript:unhide('chartbox');">Outage graph</a> |
                   <a href="data.json">JSON</a></p>
@@ -465,6 +476,6 @@ if __name__ == '__main__':
             <div id="graphimage" style="background:url(http://munin.sodtech.net/hoopycat.com/framboise/rgeoutages-day.png); width:495px; height:271px;"></div>
         </div>
 
-    """ % (time.asctime(), len(markerlist), s, '; '.join(localelist), git_version, git_modtime)
+    """ % (time.asctime(), len(markerlist), s, '<br/>'.join(localelist), git_version, git_modtime)
 
     sys.stdout.write(produceMapBody(bodytext))
