@@ -9,6 +9,8 @@ import time
 import urllib
 import urllib2
 
+from datetime import datetime
+
 try:
     import json
 except:
@@ -21,6 +23,7 @@ except:
     sys.exit(1)
 
 import scrape_rge
+
 
 def initDB(filename="rgeoutages.sqlite3"):
     """Connect to and initialize the cache database.
@@ -42,6 +45,7 @@ def initDB(filename="rgeoutages.sqlite3"):
         db.commit()
 
     return db
+
 
 def fetchGeocode(location):
     """Fetches geocoding information.
@@ -76,6 +80,7 @@ def fetchGeocode(location):
 
     return outdict
 
+
 def geocode(db, town, location, street):
     """Geocodes a location, either using the cache or the Google.
 
@@ -90,6 +95,7 @@ def geocode(db, town, location, street):
         location = town
     street = street.lower().strip()
 
+    # disambiguate lanes
     if street.endswith(' la'):
         street += 'ne'
 
@@ -97,11 +103,17 @@ def geocode(db, town, location, street):
 
     # check the db
     c = db.cursor()
-    c.execute('select latitude,longitude,formattedaddress,locationtype,viewport,lastcheck from geocodecache2 where town=? and location=? and streetname=? order by lastcheck desc limit 1', (town, location, street))
+    c.execute("""select latitude, longitude, formattedaddress, locationtype,
+                        viewport, lastcheck
+                 from geocodecache2
+                 where town=? and location=? and streetname=?
+                 order by lastcheck desc limit 1""",
+              (town, location, street))
 
     rows = c.fetchall()
     if rows:
-        (latitude,longitude,formattedaddress,locationtype,viewport_json,lastcheck) = rows[0]
+        (latitude, longitude, formattedaddress, locationtype, viewport_json,
+         lastcheck) = rows[0]
         if lastcheck < (time.time()+(7*24*60*60)):
             using_cache = True
             viewport = tuple(json.loads(viewport_json))
@@ -118,10 +130,18 @@ def geocode(db, town, location, street):
 
         viewport_json = json.dumps(fetchresult['viewport'])
 
-        c.execute('insert into geocodecache2 (town, location, streetname, latitude, longitude, formattedaddress, locationtype, lastcheck, viewport) values (?,?,?,?,?,?,?,?,?)', (town, location, street, fetchresult['latitude'], fetchresult['longitude'], fetchresult['formattedaddress'], fetchresult['locationtype'], time.time(), viewport_json))
+        c.execute("""insert into geocodecache2
+                        (town, location, streetname, latitude, longitude,
+                         formattedaddress, locationtype, lastcheck,
+                         viewport)
+                     values (?,?,?,?,?,?,?,?,?)""",
+                 (town, location, street, fetchresult['latitude'],
+                  fetchresult['longitude'], fetchresult['formattedaddress'],
+                  fetchresult['locationtype'], time.time(), viewport_json))
         db.commit()
 
         return fetchresult
+
 
 def distance_on_unit_sphere(lat1, long1, lat2, long2):
     # From http://www.johndcook.com/python_longitude_latitude.html
@@ -154,67 +174,9 @@ def distance_on_unit_sphere(lat1, long1, lat2, long2):
     # in your favorite set of units to get length.
     return arc
 
+
 def produceMapHeader(apikey, markers, centers, points):
     """Produces a map header given an API key and a list of produceMarkers"""
-
-    out = u"""
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml">
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-    <meta http-equiv="refresh" content="900"/>
-    <title>(%i) Rochester, New York Power Outage Map</title>
-<style type="text/css">
-    v\:* {behavior:url(#default#VML);}  html, body {width: 100%%; height: 100%%}  body {margin-top: 0px; margin-right: 0px; margin-left: 0px; margin-bottom: 0px}
-
-    p, li {
-        font-family:  Verdana, sans-serif;
-        font-size: 13px;
-      }
-
-    a {
-        text-decoration: none;
-      }
-
-    .hidden { visibility: hidden; }
-    .unhidden { visibility: visible; }
-
-</style>
-<script type="text/javascript" src="//maps.googleapis.com/maps/api/js?v=3&key=%s&sensor=false"></script>
-<script type="text/javascript" src="markerclusterer.js"></script>
-<script type="text/javascript">
-
-    function hide(divID) {
-        var item = document.getElementById(divID);
-        if (item) {
-            item.className=(item.className=='unhidden')?'hidden':'unhidden';
-        }
-    }
-
-    function unhide(divID) {
-        var item = document.getElementById(divID);
-        if (item) {
-            item.className=(item.className=='hidden')?'unhidden':'hidden';
-        }
-    }
-
-    function createMarker(map, infowindow, position, title, text, color) {
-        var marker = new google.maps.Marker({
-            title: title,
-            position: position,
-            icon: "//www.google.com/mapfiles/marker_" + color + ".png"
-        });
-
-        google.maps.event.addListener(marker, "click", function() {
-            infowindow.content = text;
-            infowindow.open(map, marker);
-        });
-
-        return marker;
-    }
-
-""" % (len(markers), apikey)
 
     # Determine center of map:
     # Initialize variables
@@ -250,45 +212,114 @@ def produceMapHeader(apikey, markers, centers, points):
     else:
         zoom = 9
 
-    out += u"""
-        function setupMarkers(map, infowindow) {
-            var batch = [];
-            %s
-            return batch;
-        }
-    """ % '\n'.join(markers)
+    return u"""<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="refresh" content="900"/>
+    <title>({len_markers}) Rochester, New York Power Outage Map</title>
+    <style type="text/css">
+        v\:* {{behavior:url(#default#VML);}}
+        html, body {{width: 100%; height: 100%}}
+        body {{margin-top: 0px; margin-right: 0px; margin-left: 0px; margin-bottom: 0px}}
 
-    out += u"""
-    /* distance: %.2f
-       minimum corner: %.4f, %.4f
-       maximum corner: %.4f, %.4f */
-    """ % (distance, minLat, minLng, maxLat, maxLng)
+        p, li {{
+            font-family:  Verdana, sans-serif;
+            font-size: 13px;
+        }}
 
-    out += u"""
-    function initialize() {
-        var map = new google.maps.Map(
-            document.getElementById("map_canvas"), {
-                center: new google.maps.LatLng(%.4f, %.4f),
-                zoom: %i,
-                mapTypeId: google.maps.MapTypeId.TERRAIN
-        });
+        a {{
+            text-decoration: none;
+        }}
 
-        var infowindow = new google.maps.InfoWindow({
-            content: "lorem ipsum"
-        });
+        .hidden {{ visibility: hidden; }}
+        .unhidden {{ visibility: visible; }}
 
-        var markerCluster = new MarkerClusterer(map, setupMarkers(map, infowindow));
-    };
+    </style>
+    <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?v=3&key={apikey}&sensor=false"></script>
+    <script type="text/javascript" src="markerclusterer.js"></script>
+    <script type="text/javascript">
 
-    google.maps.event.addDomListener(window, 'load', initialize);
+        function hide(divID) {{
+            var item = document.getElementById(divID);
+            if (item) {{
+                item.className=(item.className=='unhidden')?'hidden':'unhidden';
+            }}
+        }}
 
-    """ % (centerLat, centerLng, zoom)
-    out += u"""
-        </script>
-        </head>
-    """
+        function unhide(divID) {{
+            var item = document.getElementById(divID);
+            if (item) {{
+                item.className=(item.className=='hidden')?'unhidden':'hidden';
+            }}
+        }}
 
-    return out
+        // aka createMarker
+        function cMkr(map, iw, lat, lng, title, text, color) {{
+            // Returns a Marker object at a given position, with a
+            // descriptive infowindow.
+            var marker = new google.maps.Marker({{
+                title: title,
+                position: new google.maps.LatLng(lat, lng),
+                icon: "//www.google.com/mapfiles/marker_" + color + ".png"
+            }});
+
+            google.maps.event.addListener(marker, "click", function() {{
+                iw.content = text;
+                iw.open(map, marker);
+            }});
+
+            return marker;
+        }}
+
+        function setupMarkers(map, iw) {{
+            // Returns a list of currently-active Markers.
+            var b = [];
+            // BEGIN Dynamic Code
+            {all_markers}
+            // END Dynamic Code
+            return b;
+        }}
+
+        /* distance: {distance}
+           minimum corner: {minLat}, {minLng}
+           maximum corner: {maxLat}, {maxLng} */
+
+        function initialize() {{
+            // Creates a map and a master infowindow, as well as a
+            // markerCluster with all active markers.
+            var map = new google.maps.Map(
+                document.getElementById("map_canvas"), {{
+                    center: new google.maps.LatLng({centerLat}, {centerLng}),
+                    zoom: {zoom},
+                    mapTypeId: google.maps.MapTypeId.TERRAIN
+            }});
+
+            var infowindow = new google.maps.InfoWindow({{
+                content: "lorem ipsum"
+            }});
+
+            var markerCluster = new MarkerClusterer(map, setupMarkers(map, infowindow));
+        }};
+
+        google.maps.event.addDomListener(window, 'load', initialize);
+
+    </script>
+  </head>
+""".format(
+             apikey         = apikey,
+             len_markers    = len(markers),
+             all_markers    = '\n'.join(markers),
+             distance       = distance,
+             minLat         = minLat,
+             minLng         = minLng,
+             maxLat         = maxLat,
+             maxLng         = maxLng,
+             centerLat      = centerLat,
+             centerLng      = centerLng,
+             zoom           = zoom,
+          )
+
 
 def produceMarker(lat, lng, text, firstreport=-1, streetinfo={}):
     """Produces a google maps marker given a latitude, longitude, text, and first report time"""
@@ -314,16 +345,18 @@ def produceMarker(lat, lng, text, firstreport=-1, streetinfo={}):
         else:
             color = 'black'
 
-    longtext = '<strong>' + text + '</strong><br />' + '<br />'.join('%s: %s' % (key, value) for key, value in streetinfo.items())
-    return 'batch.push(new createMarker(map, infowindow, new google.maps.LatLng(%f, %f), "%s", "%s", "%s"));' % (lat, lng, text, longtext, color)
+    longtext = '<strong>' + text + '</strong><br/>' + '<br/>'.join('%s: %s' % (key, value) for key, value in streetinfo.items())
+    return 'b.push(new cMkr(map, iw, %f, %f, "%s", "%s", "%s"));' % (lat, lng, text, longtext, color)
+
 
 def produceMapBody(body):
-    return u"""  <body>
+    return u"""
+  <body>
     <div id="map_canvas" style="width: 100%%; height: 100%%;"></div>
-    %s
+""" + body + """
   </body>
-</html>
-""" % body
+</html>"""
+
 
 if __name__ == '__main__':
     db = initDB()
@@ -413,7 +446,7 @@ if __name__ == '__main__':
     os.rename('data.new.json', 'data.json')
 
     # XXX: DEBUG CODE
-    if False:
+    if len(sys.argv) > 1 and sys.argv[1] == 'debug':
         c = db.cursor()
         c.execute('select latitude,longitude,formattedaddress,locationtype,viewport,lastcheck from geocodecache2 where town=? order by lastcheck desc', ("rochester",))
 
@@ -429,41 +462,46 @@ if __name__ == '__main__':
     sys.stdout.write(produceMapHeader(apikey, markerlist, citycenterlist, pointlist).encode("utf-8"))
 
     bodytext = u"""
-        <div id="infobox" class="unhidden" style="top:25px; left:75px; position:absolute; background-color:white; border:2px solid black; width:50%%; opacity:0.8; padding:10px;">
-            <div id="closebutton" style="top:2px; right:2px; position:absolute">
-                <a href="javascript:hide('infobox');"><img src="xbox.png" border=0 alt="X" title="We'll leave the light on for you."></a>
-            </div>
-            <p><b>Rochester-area Power Outage Map</b> as of %s (%i street%s)</b></p>
-            <p style="font-size:small;"><a href="javascript:unhide('faqbox');">More information about this map</a> | 
-                  <a href="javascript:unhide('chartbox');">Outage graph</a> |
-                  <a href="data.json">JSON</a></p>
-            <p style="font-size:xx-small;">%s</p>
+    <div id="infobox" class="unhidden" style="top:25px; left:75px; position:absolute; background-color:white; border:2px solid black; width:50%; opacity:0.8; padding:10px;">
+        <div id="closebutton" style="top:2px; right:2px; position:absolute">
+            <a href="javascript:hide('infobox');"><img src="xbox.png" border=0 alt="X" title="We'll leave the light on for you."></a>
         </div>
+        <p><b>Rochester, New York Power Outage Map</b> as of {asof_time} ({streets} street{s})</b></p>
+        <p>Automatically generated every 15 minutes.  Zoom for more detail.</p>
+        <p style="font-size:small;"><a href="javascript:unhide('faqbox');">More information about this map</a> | 
+              <a href="javascript:unhide('chartbox');">Outage graph</a> |
+              <a href="data.json">JSON</a></p>
+        <p style="font-size:xx-small;">{locales}</p>
+    </div>
 
-        <div id="faqbox" class="hidden" style="top:45px; left:95px; position:absolute; background-color:white; border:2px solid black; width:75%%; padding:10px;">
-            <div id="closebutton" style="top:2px; right:2px; position:absolute">
-                <a href="javascript:hide('faqbox');"><img src="xbox.png" border=0 alt="X" title="OK, OK, I'll show you the map."></a>
-            </div>
-            <p>This map plots the approximate locations of power outages in Rochester, New York, and is updated every ten minutes.  The source data for this map is published by <A HREF="http://www.rge.com/Outages/outageinformation.html">RG&E</A>, but all map-related blame should go to <a href="http://hoopycat.com/~rtucker/">Ryan Tucker</a> &lt;<a href="mailto:rtucker@gmail.com">rtucker@gmail.com</a>&gt;.  You can find the source code <a href="https://github.com/rtucker/rgeoutages/">on GitHub</a>.</p>
-            <p>Some important tips to keep in mind...</p>
-            <ul>
-                <li><b>RG&E only publishes a list of street names.</b> This map's pointer will end up in the geographic center of the street, which will undoubtedly be wrong for really long streets.  Look for clusters of outages.</li>
-                <li><b>This map doesn't indicate the actual quantity of power outages or people without power.</b> There may be just one house without power on a street, or every house on a street.  There may be multiple unrelated outages on one street, too.  There's no way to know.</li>
-                <li><b>This page may be out of date.</b> This page does not get regenerated if there are no outages.  (Pure laziness on my part.)  If in doubt, check the as-of time.</li>
-            </ul>
-            <p>Also, be sure to check out RG&E's <a href="http://rge.com/Outages/">Outage Central</a> for official information, to report outages, or to check on the status of an outage.</p>
-            <hr>
-            <p><b>IF YOU HAVE A LIFE-THREATENING ELECTRICAL EMERGENCY, CALL RG&E AT 1-800-743-1701 OR CALL 911 IMMEDIATELY.  DO NOT TOUCH DOWNED ELECTRICAL LINES, EVER.  EVEN IF YOUR STREET IS LISTED HERE.</b></p>
-            <p style="font-size:xx-small;"><a href="https://github.com/rtucker/rgeoutages/commit/%s">Software last modified %s</a>.</p>
+    <div id="faqbox" class="hidden" style="top:45px; left:95px; position:absolute; background-color:white; border:2px solid black; width:75%; padding:10px;">
+        <div id="closebutton" style="top:2px; right:2px; position:absolute">
+            <a href="javascript:hide('faqbox');"><img src="xbox.png" border=0 alt="X" title="OK, OK, I'll show you the map."></a>
         </div>
+        <p>This map plots the approximate locations of power outages in Rochester, New York, and is updated every ten minutes.  The source data for this map is published by <A HREF="http://www.rge.com/Outages/outageinformation.html">RG&E</A>, but all map-related blame should go to <a href="http://hoopycat.com/~rtucker/">Ryan Tucker</a> &lt;<a href="mailto:rtucker@gmail.com">rtucker@gmail.com</a>&gt;.  You can find the source code <a href="https://github.com/rtucker/rgeoutages/">on GitHub</a>.</p>
+        <p>Some important tips to keep in mind...</p>
+        <ul>
+            <li><b>RG&E only publishes a list of street names.</b> This map's pointer will end up in the geographic center of the street, which will undoubtedly be wrong for really long streets.  Look for clusters of outages.</li>
+            <li><b>This map doesn't indicate the actual quantity of power outages or people without power.</b> There may be just one house without power on a street, or every house on a street.  There may be multiple unrelated outages on one street, too.  There's no way to know.</li>
+            <li><b>This page may be out of date.</b> If in doubt, check the as-of time.</li>
+        </ul>
+        <p>Also, be sure to check out RG&E's <a href="http://rge.com/Outages/">Outage Central</a> for official information, to report outages, or to check on the status of an outage.</p>
+        <hr>
+        <p><b>IF YOU HAVE A LIFE-THREATENING ELECTRICAL EMERGENCY, CALL RG&E AT 1-800-743-1701 OR CALL 911 IMMEDIATELY.  DO NOT TOUCH DOWNED ELECTRICAL LINES, EVER.  EVEN IF YOUR STREET IS LISTED HERE.</b></p>
+        <p style="font-size:xx-small;"><a href="https://github.com/rtucker/rgeoutages/commit/{git_version}">Software last modified {git_time}</a>.</p>
+    </div>
 
-        <div id="chartbox" class="hidden" style="top:45px; left:95px; position:absolute; background-color:white; border:2px solid black; padding:10px;">
-            <div id="closebutton" style="top:2px; right:2px; position:absolute">
-                <a href="javascript:hide('chartbox');"><img src="xbox.png" border=0 alt="X" title="Hide graph window"></a>
-            </div>
-            <div id="graphimage" style="background:url(http://munin.sodtech.net/hoopycat.com/framboise/rgeoutages-day.png); width:495px; height:271px;"></div>
+    <div id="chartbox" class="hidden" style="top:45px; left:95px; position:absolute; background-color:white; border:2px solid black; padding:10px;">
+        <div id="closebutton" style="top:2px; right:2px; position:absolute">
+            <a href="javascript:hide('chartbox');"><img src="xbox.png" border=0 alt="X" title="Hide graph window"></a>
         </div>
-
-    """ % (time.asctime(), len(markerlist), s, '<br/>'.join(localelist), git_version, git_modtime)
+        <div id="graphimage" style="background:url(http://munin.sodtech.net/hoopycat.com/framboise/rgeoutages-day.png); width:495px; height:271px;"></div>
+    </div>
+    """.format(asof_time = datetime.now().strftime("%A, %d %B %Y at %r"),
+               streets = len(markerlist),
+               s = s,
+               locales = '<br/>'.join(localelist),
+               git_version = git_version.strip(),
+               git_time = git_modtime)
 
     sys.stdout.write(produceMapBody(bodytext))
