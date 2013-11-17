@@ -181,8 +181,8 @@ def produceMapHeader(apikey, markers, centers, points):
     .unhidden { visibility: visible; }
 
 </style>
-<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=%s" type="text/javascript"></script>
-<script src="http://gmaps-utility-library.googlecode.com/svn/trunk/markermanager/release/src/markermanager.js"></script>
+<script type="text/javascript" src="//maps.googleapis.com/maps/api/js?v=3&key=%s&sensor=false"></script>
+<script type="text/javascript" src="markerclusterer.js"></script>
 <script type="text/javascript">
 
     function hide(divID) {
@@ -199,27 +199,18 @@ def produceMapHeader(apikey, markers, centers, points):
         }
     }
 
-    var map = null;
-    var mgr = null;
-
-    function createMarker(point, text, color) {
-        var baseIcon = new GIcon(G_DEFAULT_ICON);
-        baseIcon.shadow = "http://www.google.com/mapfiles/shadow50.png";
-        baseIcon.iconSize = new GSize(20, 34);
-        baseIcon.shadowSize = new GSize(37, 34);
-        baseIcon.iconAnchor = new GPoint(9, 34);
-        baseIcon.infoWindowAnchor = new GPoint(9, 2);
-
-        var ouricon = new GIcon(baseIcon);
-        ouricon.image = "http://www.google.com/mapfiles/marker_" + color + ".png";
-
-        // Set up our GMarkerOptions object
-        markerOptions = { icon:ouricon };
-        var marker = new GMarker(point, markerOptions);
-
-        GEvent.addListener(marker, "click", function() {
-            marker.openInfoWindowHtml(text);
+    function createMarker(map, infowindow, position, title, text, color) {
+        var marker = new google.maps.Marker({
+            title: title,
+            position: position,
+            icon: "//www.google.com/mapfiles/marker_" + color + ".png"
         });
+
+        google.maps.event.addListener(marker, "click", function() {
+            infowindow.content = text;
+            infowindow.open(map, marker);
+        });
+
         return marker;
     }
 
@@ -259,28 +250,13 @@ def produceMapHeader(apikey, markers, centers, points):
     else:
         zoom = 9
 
-    if len(markers) > 300:
-        out += u"""
-            function setupMarkers() {
-                var batch = [];
-                %s
-                mgr.addMarkers(batch, 12);
-                var batch = [];
-                %s
-                mgr.addMarkers(batch, 1, 12);
-                mgr.refresh();
-            }
-        """ % ('\n'.join(markers), '\n'.join(centers))
-        zoom = min(zoom, 11)
-    else:
-        out += u"""
-            function setupMarkers() {
-                var batch = [];
-                %s
-                mgr.addMarkers(batch, 1);
-                mgr.refresh();
-            }
-        """ % '\n'.join(markers)
+    out += u"""
+        function setupMarkers(map, infowindow) {
+            var batch = [];
+            %s
+            return batch;
+        }
+    """ % '\n'.join(markers)
 
     out += u"""
     /* distance: %.2f
@@ -290,22 +266,23 @@ def produceMapHeader(apikey, markers, centers, points):
 
     out += u"""
     function initialize() {
-        if (GBrowserIsCompatible()) {
-            map = new GMap2(document.getElementById("map_canvas"));
-            map.setCenter(new GLatLng(%.4f, %.4f), %i);
-            map.setUIToDefault();
-            mgr = new MarkerManager(map);
-            window.setTimeout(setupMarkers, 0);
+        var map = new google.maps.Map(
+            document.getElementById("map_canvas"), {
+                center: new google.maps.LatLng(%.4f, %.4f),
+                zoom: %i,
+                mapTypeId: google.maps.MapTypeId.TERRAIN
+        });
 
-            // Monitor the window resize event and let the map know when it occurs
-            if (window.attachEvent) { 
-                window.attachEvent("onresize", function() {this.map.onResize()} );
-            } else {
-                window.addEventListener("resize", function() {this.map.onResize()} , false);
-            }
-        }
-    } """ % (centerLat, centerLng, zoom)
+        var infowindow = new google.maps.InfoWindow({
+            content: "lorem ipsum"
+        });
 
+        var markerCluster = new MarkerClusterer(map, setupMarkers(map, infowindow));
+    };
+
+    google.maps.event.addDomListener(window, 'load', initialize);
+
+    """ % (centerLat, centerLng, zoom)
     out += u"""
         </script>
         </head>
@@ -313,7 +290,7 @@ def produceMapHeader(apikey, markers, centers, points):
 
     return out
 
-def produceMarker(lat, long, text, firstreport=-1, streetinfo={}):
+def produceMarker(lat, lng, text, firstreport=-1, streetinfo={}):
     """Produces a google maps marker given a latitude, longitude, text, and first report time"""
     color = 'grey'
     if firstreport > 0:
@@ -337,11 +314,11 @@ def produceMarker(lat, long, text, firstreport=-1, streetinfo={}):
         else:
             color = 'black'
 
-    text = '<strong>' + text + '</strong><br />' + '<br />'.join('%s: %s' % (key, value) for key, value in streetinfo.items())
-    return 'batch.push(new createMarker(new GLatLng(%f, %f), "%s", "%s"));' % (lat, long, text, color)
+    longtext = '<strong>' + text + '</strong><br />' + '<br />'.join('%s: %s' % (key, value) for key, value in streetinfo.items())
+    return 'batch.push(new createMarker(map, infowindow, new google.maps.LatLng(%f, %f), "%s", "%s", "%s"));' % (lat, lng, text, longtext, color)
 
 def produceMapBody(body):
-    return u"""  <body onload="initialize()" onunload="GUnload()">
+    return u"""  <body>
     <div id="map_canvas" style="width: 100%%; height: 100%%;"></div>
     %s
   </body>
@@ -435,12 +412,20 @@ if __name__ == '__main__':
     newjsonfd.close()
     os.rename('data.new.json', 'data.json')
 
-    if len(markerlist) > 300:
-        s = 's -- zoom for more detail'
-    elif len(markerlist) == 1:
+    # XXX: DEBUG CODE
+    if False:
+        c = db.cursor()
+        c.execute('select latitude,longitude,formattedaddress,locationtype,viewport,lastcheck from geocodecache2 where town=? order by lastcheck desc', ("rochester",))
+
+        for i, r in enumerate(c.fetchall()):
+            markerlist.append(produceMarker(r[0], r[1], r[2], i, {'debug': "num %d" % i}))
+    # XXX: END DEBUG
+
+    if len(markerlist) == 1:
         s = ''
     else:
         s = 's'
+
     sys.stdout.write(produceMapHeader(apikey, markerlist, citycenterlist, pointlist).encode("utf-8"))
 
     bodytext = u"""
