@@ -299,7 +299,9 @@ def produceMapHeader(apikey, markers, centers, points):
                 content: "lorem ipsum"
             }});
 
-            var markerCluster = new MarkerClusterer(map, setupMarkers(map, infowindow));
+            var markerCluster = new MarkerClusterer(map, setupMarkers(map, infowindow), {{
+                maxZoom: 14
+            }});
         }};
 
         google.maps.event.addDomListener(window, 'load', initialize);
