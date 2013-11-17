@@ -52,7 +52,7 @@ def fetchGeocode(location):
 
     sanelocation = urllib.quote(location)
 
-    response = urllib2.urlopen("http://maps.google.com/maps/api/geocode/json?address=%s&sensor=false" % sanelocation)
+    response = urllib2.urlopen("http://maps.googleapis.com/maps/api/geocode/json?address=%s&sensor=false" % sanelocation)
 
     jsondata = response.read()
     jsondict = json.loads(jsondata)
