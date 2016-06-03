@@ -25,28 +25,6 @@ except:
 import scrape_rge
 
 
-def initDB(filename="rgeoutages.sqlite3"):
-    """Connect to and initialize the cache database.
-
-    Optional: Filename of database
-    Returns: db object
-    """
-
-    db = sqlite3.connect(filename)
-    c = db.cursor()
-    c.execute('pragma table_info(geocodecache2)')
-    columns = ' '.join(i[1] for i in c.fetchall()).split()
-    if columns == []:
-        # need to create table
-        c.execute("""create table geocodecache2
-            (town text, location text, streetname text, latitude real,
-             longitude real, formattedaddress text, locationtype text,
-             lastcheck integer, viewport text)""")
-        db.commit()
-
-    return db
-
-
 def fetchGeocode(location):
     """Fetches geocoding information.
 
@@ -66,15 +44,10 @@ def fetchGeocode(location):
 
     data = jsondict['results'][0]
     
-    viewport = (    data['geometry']['viewport']['southwest']['lat'],
-                    data['geometry']['viewport']['southwest']['lng'],
-                    data['geometry']['viewport']['northeast']['lat'],
-                    data['geometry']['viewport']['northeast']['lng']    )
     outdict = { 'formattedaddress': data['formatted_address'],
                 'latitude': data['geometry']['location']['lat'],
                 'longitude': data['geometry']['location']['lng'],
-                'locationtype': data['geometry']['location_type'],
-                'viewport': viewport    }
+                'locationtype': data['geometry']['location_type']    }
 
     time.sleep(1)
 
@@ -101,45 +74,13 @@ def geocode(db, town, location, street):
 
     using_cache = False
 
-    # check the db
-    c = db.cursor()
-    c.execute("""select latitude, longitude, formattedaddress, locationtype,
-                        viewport, lastcheck
-                 from geocodecache2
-                 where town=? and location=? and streetname=?
-                 order by lastcheck desc limit 1""",
-              (town, location, street))
-
-    rows = c.fetchall()
-    if rows:
-        (latitude, longitude, formattedaddress, locationtype, viewport_json,
-         lastcheck) = rows[0]
-        if lastcheck < (time.time()+(7*24*60*60)):
-            using_cache = True
-            viewport = tuple(json.loads(viewport_json))
-
-            outdict = { 'formattedaddress': formattedaddress,
-                        'latitude': latitude,
-                        'longitude': longitude,
-                        'locationtype': locationtype,
-                        'viewport': viewport    }
-            return outdict
 
     if not using_cache:
         fetchresult = fetchGeocode(street + ", " + location + " NY")
 
         viewport_json = json.dumps(fetchresult['viewport'])
 
-        c.execute("""insert into geocodecache2
-                        (town, location, streetname, latitude, longitude,
-                         formattedaddress, locationtype, lastcheck,
-                         viewport)
-                     values (?,?,?,?,?,?,?,?,?)""",
-                 (town, location, street, fetchresult['latitude'],
-                  fetchresult['longitude'], fetchresult['formattedaddress'],
-                  fetchresult['locationtype'], time.time(), viewport_json))
-        db.commit()
-
+        
         return fetchresult
 
 
