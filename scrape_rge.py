@@ -11,7 +11,7 @@ import StringIO
 
 from BeautifulSoup import BeautifulSoup
 
-BASE_URL="http://www3.rge.com/OutageReports/"
+BASE_URL="http://ebiz1.rge.com/OutageReports/"
 START_URL="RGE.html"
 
 try:
