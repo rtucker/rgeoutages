@@ -302,7 +302,7 @@ def produceMapBody(body):
 
 
 if __name__ == '__main__':
-    db = initDB()
+    
     try:
         apikey = secrets.apikey
     except:
